@@ -44,6 +44,8 @@ final class RunCommand extends Command
         }
 
         $this->symfonyStyle->table(['Level', 'Errors'], $errorCountByLevel);
+
+        return self::SUCCESS;
     }
 
     private function measureErrorsInLevel(int $phpstanLevel): int

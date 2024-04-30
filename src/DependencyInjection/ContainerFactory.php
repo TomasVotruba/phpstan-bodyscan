@@ -34,13 +34,13 @@ final class ContainerFactory
         );
 
         $container->singleton(Application::class, function (Container $container): Application {
-            /** @var RunCommand $checkCommand */
-            $checkCommand = $container->make(RunCommand::class);
+            /** @var RunCommand $runCommand */
+            $runCommand = $container->make(RunCommand::class);
 
             $application = new Application();
-            $application->add($checkCommand);
+            $application->add($runCommand);
 
-            $application->setDefaultCommand($checkCommand->getName());
+            $application->setDefaultCommand('run');
 
             $this->hideDefaultCommands($application);
 
