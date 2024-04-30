@@ -54,18 +54,14 @@ final class RunCommand extends Command
     private function measureErrorCountInLevel(int $phpStanLevel, string $projectDirectory): int
     {
         // with json format
-        $analyseLevelProcess = new Process([
-            'vendor/bin/phpstan',
-            'analyse',
-            '--error-format',
-            'json',
-            '--level',
-            $phpStanLevel,
+        $analyseLevelProcess = new Process(
+            ['vendor/bin/phpstan', 'analyse', '--error-format', 'json', '--level', $phpStanLevel],
+            $projectDirectory,
             null,
             null,
             // timeout in seconds
             200,
-        ], $projectDirectory);
+        );
 
         $analyseLevelProcess->run();
         $jsonResult = $analyseLevelProcess->getOutput();
@@ -75,7 +71,7 @@ final class RunCommand extends Command
         } catch (JsonException $jsonException) {
             throw new JsonException(sprintf(
                 'Could not decode JSON from phpstan: "%s"',
-                $jsonResult
+                $jsonResult ?: $analyseLevelProcess->getErrorOutput()
             ), 0, $jsonException);
         }
 
