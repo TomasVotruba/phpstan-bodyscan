@@ -63,7 +63,6 @@ final class RunCommand extends Command
         $jsonResult = $analyseLevelProcess->getOutput();
 
         try {
-
             $json = Json::decode($jsonResult, true);
         } catch (JsonException $jsonException) {
             throw new JsonException(sprintf(
