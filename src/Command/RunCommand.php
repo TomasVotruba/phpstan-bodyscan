@@ -8,6 +8,7 @@ use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableStyle;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,6 +27,8 @@ final class RunCommand extends Command
     {
         $this->setName('run');
         $this->setDescription('Check classes that are not used in any config and in the code');
+
+        $this->addArgument('directory', InputArgument::OPTIONAL, 'Directory to scan', getcwd());
         $this->addOption('max-level', null, InputOption::VALUE_REQUIRED, 'Max PHPStan level to run', 8);
     }
 
@@ -34,12 +37,13 @@ final class RunCommand extends Command
         $errorCountByLevel = [];
 
         $maxPhpStanLevel = (int) $input->getOption('max-level');
+        $projectDirectory = $input->getArgument('directory');
 
         // measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
 
-            $errorCountByLevel[$phpStanLevel] = $this->measureErrorCountInLevel($phpStanLevel);
+            $errorCountByLevel[$phpStanLevel] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory);
         }
 
         $this->renderResultInTable($errorCountByLevel);
@@ -47,7 +51,7 @@ final class RunCommand extends Command
         return self::SUCCESS;
     }
 
-    private function measureErrorCountInLevel(int $phpStanLevel): int
+    private function measureErrorCountInLevel(int $phpStanLevel, string $projectDirectory): int
     {
         // with json format
         $analyseLevelProcess = new Process([
@@ -57,7 +61,11 @@ final class RunCommand extends Command
             'json',
             '--level',
             $phpStanLevel,
-        ]);
+            null,
+            null,
+            // timeout in seconds
+            200
+        ], $projectDirectory);
 
         $analyseLevelProcess->run();
         $jsonResult = $analyseLevelProcess->getOutput();
