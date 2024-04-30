@@ -7,6 +7,8 @@ namespace TomasVotruba\PHPStanBodyscan\Command;
 use Nette\Utils\Json;
 use Nette\Utils\JsonException;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\TableCellStyle;
+use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -37,18 +39,17 @@ final class RunCommand extends Command
 
         // measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel < self::MAX_PHPSTAN_LEVEL; ++$phpStanLevel) {
-            $this->symfonyStyle->title(sprintf('Level %d', $phpStanLevel));
-            $errorCount = $this->measureErrorsInLevel($phpStanLevel);
+            $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
 
-            $errorCountByLevel[$phpStanLevel] = $errorCount;
+            $errorCountByLevel[$phpStanLevel] = $this->measureErrorCountInLevel($phpStanLevel);
         }
 
-        $this->symfonyStyle->table(['Level', 'Errors'], $errorCountByLevel);
+        $this->renderResultInTable($errorCountByLevel);
 
         return self::SUCCESS;
     }
 
-    private function measureErrorsInLevel(int $phpstanLevel): int
+    private function measureErrorCountInLevel(int $phpstanLevel): int
     {
         // with json format
         $analyseLevelProcess = new Process([
@@ -59,8 +60,8 @@ final class RunCommand extends Command
             '--level',
             $phpstanLevel,
         ]);
-        $analyseLevelProcess->run();
 
+        $analyseLevelProcess->run();
         $jsonResult = $analyseLevelProcess->getOutput();
 
         try {
@@ -73,5 +74,28 @@ final class RunCommand extends Command
         }
 
         return (int) $json['totals']['errors'];
+    }
+
+    /**
+     * @param array<int, int> $errorCountByLevel
+     */
+    private function renderResultInTable(array $errorCountByLevel): void
+    {
+        // convert to symfony table data
+        $tableRows = [];
+        foreach ($errorCountByLevel as $phpstanLevel => $errorCount) {
+            $tableRows[] = [$phpstanLevel, $errorCount];
+        }
+
+        $tableStyle = new TableStyle();
+        $tableStyle->setPadType(STR_PAD_LEFT);
+
+        $this->symfonyStyle->newLine(2);
+        $this->symfonyStyle->createTable()
+            ->setHeaders(['Level', 'Error count'])
+            ->setRows($tableRows)
+            // allign right
+            ->setStyle($tableStyle)
+            ->render();
     }
 }

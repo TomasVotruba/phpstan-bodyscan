@@ -12,10 +12,16 @@ composer require tomasvotruba/phpstan-bodyscan --dev
 
 ## Usage
 
-Pass directories you want to check:
+Run in your project:
 
 ```bash
 vendor/bin/phpstan-bodyscan
+```
+
+To get errors count per level:
+
+```bash
+
 ```
 
 Happy coding!
