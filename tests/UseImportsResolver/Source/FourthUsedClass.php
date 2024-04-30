@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Tests\UseImportsResolver\Source;
+namespace TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\Source;
 
 final class FourthUsedClass
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Tests\FileSystem;
+namespace TomasVotruba\PHPStanBodyscan\Tests\FileSystem;
 
 use PHPUnit\Framework\TestCase;
-use TomasVotruba\ClassLeak\FileSystem\StaticRelativeFilePathHelper;
+use TomasVotruba\PHPStanBodyscan\FileSystem\StaticRelativeFilePathHelper;
 
 final class StaticRelativeFilePathHelperTest extends TestCase
 {

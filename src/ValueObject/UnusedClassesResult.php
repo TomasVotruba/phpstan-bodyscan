@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\ValueObject;
+namespace TomasVotruba\PHPStanBodyscan\ValueObject;
 
 final readonly class UnusedClassesResult
 {

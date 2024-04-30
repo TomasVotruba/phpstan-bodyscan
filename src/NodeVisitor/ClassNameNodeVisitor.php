@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\NodeVisitor;
+namespace TomasVotruba\PHPStanBodyscan\NodeVisitor;
 
 use PhpParser\Comment\Doc;
 use PhpParser\Node;

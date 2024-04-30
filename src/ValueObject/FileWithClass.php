@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\ValueObject;
+namespace TomasVotruba\PHPStanBodyscan\ValueObject;
 
 use JsonSerializable;
-use TomasVotruba\ClassLeak\FileSystem\StaticRelativeFilePathHelper;
+use TomasVotruba\PHPStanBodyscan\FileSystem\StaticRelativeFilePathHelper;
 
 final readonly class FileWithClass implements JsonSerializable
 {

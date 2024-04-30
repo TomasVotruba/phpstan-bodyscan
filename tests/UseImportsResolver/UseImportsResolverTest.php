@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Tests\UseImportsResolver;
+namespace TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver;
 
 use Iterator;
 use PHPUnit\Framework\Attributes\DataProvider;
-use TomasVotruba\ClassLeak\Tests\AbstractTestCase;
-use TomasVotruba\ClassLeak\Tests\UseImportsResolver\Fixture\SomeFactory;
-use TomasVotruba\ClassLeak\Tests\UseImportsResolver\Source\FirstUsedClass;
-use TomasVotruba\ClassLeak\Tests\UseImportsResolver\Source\FourthUsedClass;
-use TomasVotruba\ClassLeak\Tests\UseImportsResolver\Source\SecondUsedClass;
-use TomasVotruba\ClassLeak\UseImportsResolver;
+use TomasVotruba\PHPStanBodyscan\Tests\AbstractTestCase;
+use TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\Fixture\SomeFactory;
+use TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\Source\FirstUsedClass;
+use TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\Source\FourthUsedClass;
+use TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\Source\SecondUsedClass;
+use TomasVotruba\PHPStanBodyscan\UseImportsResolver;
 
 final class UseImportsResolverTest extends AbstractTestCase
 {

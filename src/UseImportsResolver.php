@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak;
+namespace TomasVotruba\PHPStanBodyscan;
 
 use PhpParser\NodeTraverser;
 use PhpParser\Parser;
-use TomasVotruba\ClassLeak\NodeDecorator\FullyQualifiedNameNodeDecorator;
-use TomasVotruba\ClassLeak\NodeVisitor\UsedClassNodeVisitor;
+use TomasVotruba\PHPStanBodyscan\NodeDecorator\FullyQualifiedNameNodeDecorator;
+use TomasVotruba\PHPStanBodyscan\NodeVisitor\UsedClassNodeVisitor;
 
 /**
- * @see \TomasVotruba\ClassLeak\Tests\UseImportsResolver\UseImportsResolverTest
+ * @see \TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\UseImportsResolverTest
  */
 final readonly class UseImportsResolver
 {

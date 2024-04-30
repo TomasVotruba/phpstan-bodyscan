@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Filtering;
+namespace TomasVotruba\PHPStanBodyscan\Filtering;
 
-use TomasVotruba\ClassLeak\ValueObject\FileWithClass;
+use TomasVotruba\PHPStanBodyscan\ValueObject\FileWithClass;
 use Webmozart\Assert\Assert;
 
 final class PossiblyUnusedClassesFilter

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Tests\Finder;
+namespace TomasVotruba\PHPStanBodyscan\Tests\Finder;
 
-use TomasVotruba\ClassLeak\Finder\PhpFilesFinder;
-use TomasVotruba\ClassLeak\Tests\AbstractTestCase;
+use TomasVotruba\PHPStanBodyscan\Finder\PhpFilesFinder;
+use TomasVotruba\PHPStanBodyscan\Tests\AbstractTestCase;
 
 final class PhpFilesFinderTest extends AbstractTestCase
 {

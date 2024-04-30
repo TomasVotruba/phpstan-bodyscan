@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Reporting;
+namespace TomasVotruba\PHPStanBodyscan\Reporting;
 
 use Nette\Utils\Json;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TomasVotruba\ClassLeak\ValueObject\FileWithClass;
-use TomasVotruba\ClassLeak\ValueObject\UnusedClassesResult;
+use TomasVotruba\PHPStanBodyscan\ValueObject\FileWithClass;
+use TomasVotruba\PHPStanBodyscan\ValueObject\UnusedClassesResult;
 
 final readonly class UnusedClassReporter
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\FileSystem;
+namespace TomasVotruba\PHPStanBodyscan\FileSystem;
 
 /**
- * @see \TomasVotruba\ClassLeak\Tests\FileSystem\StaticRelativeFilePathHelperTest
+ * @see \TomasVotruba\PHPStanBodyscan\Tests\FileSystem\StaticRelativeFilePathHelperTest
  */
 final class StaticRelativeFilePathHelper
 {

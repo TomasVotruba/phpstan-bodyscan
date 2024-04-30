@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Commands;
+namespace TomasVotruba\PHPStanBodyscan\Command;
 
 use Closure;
 use Symfony\Component\Console\Command\Command;
@@ -11,12 +11,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TomasVotruba\ClassLeak\Filtering\PossiblyUnusedClassesFilter;
-use TomasVotruba\ClassLeak\Finder\ClassNamesFinder;
-use TomasVotruba\ClassLeak\Finder\PhpFilesFinder;
-use TomasVotruba\ClassLeak\Reporting\UnusedClassesResultFactory;
-use TomasVotruba\ClassLeak\Reporting\UnusedClassReporter;
-use TomasVotruba\ClassLeak\UseImportsResolver;
+use TomasVotruba\PHPStanBodyscan\Filtering\PossiblyUnusedClassesFilter;
+use TomasVotruba\PHPStanBodyscan\Finder\ClassNamesFinder;
+use TomasVotruba\PHPStanBodyscan\Finder\PhpFilesFinder;
+use TomasVotruba\PHPStanBodyscan\Reporting\UnusedClassesResultFactory;
+use TomasVotruba\PHPStanBodyscan\Reporting\UnusedClassReporter;
+use TomasVotruba\PHPStanBodyscan\UseImportsResolver;
 
 final class CheckCommand extends Command
 {

@@ -1,6 +1,6 @@
 {
     "name": "tomasvotruba/phpstan-bodyscan",
-    "description": "Scan your project with each PHPStan level to get baseline counts",
+    "description": "Get error count for each PHPStan level",
     "license": "MIT",
     "bin": [
         "bin/phpstan-bodyscan",
@@ -12,7 +12,6 @@
         "nette/utils": "^3.2",
         "nikic/php-parser": "^4.19",
         "symfony/console": "^6.4",
-        "symfony/finder": "^6.4",
         "webmozart/assert": "^1.11"
     },
     "require-dev": {
@@ -21,29 +20,20 @@
         "phpunit/phpunit": "^10.5",
         "rector/rector": "^1.0",
         "symplify/easy-coding-standard": "^12.1",
-        "symplify/phpstan-extensions": "^11.2",
-        "tomasvotruba/unused-public": "^0.2",
         "tracy/tracy": "^2.10"
     },
     "autoload": {
         "psr-4": {
-            "TomasVotruba\\ClassLeak\\": "src"
+            "TomasVotruba\\PHPStanBodyscan\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "TomasVotruba\\ClassLeak\\Tests\\": "tests"
+            "TomasVotruba\\PHPStanBodyscan\\Tests\\": "tests"
         }
-    },
-    "replace": {
-        "symfony/polyfill-ctype": "*",
-        "symfony/polyfill-intl-grapheme": "*",
-        "symfony/polyfill-intl-normalizer": "*",
-        "symfony/polyfill-mbstring": "*"
     },
     "config": {
         "sort-packages": true,
-        "platform-check": false,
         "allow-plugins": {
             "phpstan/extension-installer": true
         }

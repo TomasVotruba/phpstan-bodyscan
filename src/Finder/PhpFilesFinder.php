@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Finder;
+namespace TomasVotruba\PHPStanBodyscan\Finder;
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Webmozart\Assert\Assert;
 
 /**
- * @see \TomasVotruba\ClassLeak\Tests\Finder\PhpFilesFinderTest
+ * @see \TomasVotruba\PHPStanBodyscan\Tests\Finder\PhpFilesFinderTest
  */
 final class PhpFilesFinder
 {

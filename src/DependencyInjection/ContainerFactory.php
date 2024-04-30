@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\DependencyInjection;
+namespace TomasVotruba\PHPStanBodyscan\DependencyInjection;
 
 use Illuminate\Container\Container;
 use PhpParser\Parser;
@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TomasVotruba\ClassLeak\Commands\CheckCommand;
+use TomasVotruba\PHPStanBodyscan\Commands\CheckCommand;
 
 /**
  * @api

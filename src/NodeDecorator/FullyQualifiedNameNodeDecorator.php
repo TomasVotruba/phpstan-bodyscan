@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\NodeDecorator;
+namespace TomasVotruba\PHPStanBodyscan\NodeDecorator;
 
 use PhpParser\Node\Stmt;
 use PhpParser\NodeTraverser;

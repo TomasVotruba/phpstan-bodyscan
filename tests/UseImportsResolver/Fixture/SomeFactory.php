@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Tests\UseImportsResolver\Fixture;
+namespace TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\Fixture;
 
-use TomasVotruba\ClassLeak\Tests\UseImportsResolver\Source\FourthUsedClass;
+use TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\Source\FourthUsedClass;
 
 final class SomeFactory
 {

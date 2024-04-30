@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Tests\ClassNameResolver\Fixture;
+namespace TomasVotruba\PHPStanBodyscan\Tests\ClassNameResolver\Fixture;
 
 /** some comment */
 final class ClassWithAnyComment

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use TomasVotruba\ClassLeak\DependencyInjection\ContainerFactory;
+use TomasVotruba\PHPStanBodyscan\DependencyInjection\ContainerFactory;
 
 if (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
     // project's autoload

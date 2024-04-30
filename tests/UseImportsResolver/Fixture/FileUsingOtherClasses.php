@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Tests\UseImportsResolver\Fixture;
+namespace TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\Fixture;
 
-use TomasVotruba\ClassLeak\Tests\UseImportsResolver\Source\FirstUsedClass;
-use TomasVotruba\ClassLeak\Tests\UseImportsResolver\Source\SecondUsedClass;
+use TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\Source\FirstUsedClass;
+use TomasVotruba\PHPStanBodyscan\Tests\UseImportsResolver\Source\SecondUsedClass;
 
 final class FileUsingOtherClasses
 {

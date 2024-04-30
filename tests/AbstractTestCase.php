@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Tests;
+namespace TomasVotruba\PHPStanBodyscan\Tests;
 
 use PHPUnit\Framework\TestCase;
-use TomasVotruba\ClassLeak\DependencyInjection\ContainerFactory;
+use TomasVotruba\PHPStanBodyscan\DependencyInjection\ContainerFactory;
 use Webmozart\Assert\Assert;
 
 abstract class AbstractTestCase extends TestCase

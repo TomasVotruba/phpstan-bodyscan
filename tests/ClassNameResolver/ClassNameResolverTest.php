@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Tests\ClassNameResolver;
+namespace TomasVotruba\PHPStanBodyscan\Tests\ClassNameResolver;
 
 use Iterator;
 use PHPUnit\Framework\Attributes\DataProvider;
-use TomasVotruba\ClassLeak\ClassNameResolver;
-use TomasVotruba\ClassLeak\Tests\AbstractTestCase;
-use TomasVotruba\ClassLeak\Tests\ClassNameResolver\Fixture\ClassWithAnyComment;
-use TomasVotruba\ClassLeak\Tests\ClassNameResolver\Fixture\SomeAttribute;
-use TomasVotruba\ClassLeak\Tests\ClassNameResolver\Fixture\SomeClass;
-use TomasVotruba\ClassLeak\Tests\ClassNameResolver\Fixture\SomeMethodAttribute;
-use TomasVotruba\ClassLeak\ValueObject\ClassNames;
+use TomasVotruba\PHPStanBodyscan\ClassNameResolver;
+use TomasVotruba\PHPStanBodyscan\Tests\AbstractTestCase;
+use TomasVotruba\PHPStanBodyscan\Tests\ClassNameResolver\Fixture\ClassWithAnyComment;
+use TomasVotruba\PHPStanBodyscan\Tests\ClassNameResolver\Fixture\SomeAttribute;
+use TomasVotruba\PHPStanBodyscan\Tests\ClassNameResolver\Fixture\SomeClass;
+use TomasVotruba\PHPStanBodyscan\Tests\ClassNameResolver\Fixture\SomeMethodAttribute;
+use TomasVotruba\PHPStanBodyscan\ValueObject\ClassNames;
 
 final class ClassNameResolverTest extends AbstractTestCase
 {

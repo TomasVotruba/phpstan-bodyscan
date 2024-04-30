@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TomasVotruba\ClassLeak\Finder;
+namespace TomasVotruba\PHPStanBodyscan\Finder;
 
-use TomasVotruba\ClassLeak\ClassNameResolver;
-use TomasVotruba\ClassLeak\ValueObject\ClassNames;
-use TomasVotruba\ClassLeak\ValueObject\FileWithClass;
+use TomasVotruba\PHPStanBodyscan\ClassNameResolver;
+use TomasVotruba\PHPStanBodyscan\ValueObject\ClassNames;
+use TomasVotruba\PHPStanBodyscan\ValueObject\FileWithClass;
 
 final readonly class ClassNamesFinder
 {
