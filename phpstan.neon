@@ -5,7 +5,3 @@ parameters:
         - bin
         - src
         - tests
-
-    excludePaths:
-        - */Fixture/*
-        - */Source/*

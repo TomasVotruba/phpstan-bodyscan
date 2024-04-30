@@ -1,10 +1,10 @@
 {
-    "name": "tomasvotruba/class-leak",
-    "description": "Detect leaking classes",
+    "name": "tomasvotruba/phpstan-bodyscan",
+    "description": "Scan your project with each PHPStan level to get baseline counts",
     "license": "MIT",
     "bin": [
-        "bin/class-leak",
-        "bin/class-leak.php"
+        "bin/phpstan-bodyscan",
+        "bin/phpstan-bodyscan.php"
     ],
     "require": {
         "php": ">=8.2",
