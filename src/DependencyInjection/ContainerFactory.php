@@ -40,6 +40,8 @@ final class ContainerFactory
             $application = new Application();
             $application->add($checkCommand);
 
+            $application->setDefaultCommand($checkCommand->getName());
+
             $this->hideDefaultCommands($application);
 
             return $application;

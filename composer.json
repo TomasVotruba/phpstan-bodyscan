@@ -9,14 +9,14 @@
     "require": {
         "php": ">=8.2",
         "illuminate/container": "^11.0",
-        "nette/utils": "^3.2",
+        "nette/utils": "^4.0",
         "symfony/console": "^6.4",
         "symfony/process": "^7.0",
         "webmozart/assert": "^1.11"
     },
     "require-dev": {
         "phpstan/extension-installer": "^1.2",
-        "phpstan/phpstan": "^1.10.57",
+        "phpstan/phpstan": "^1.10",
         "rector/rector": "^1.0",
         "symplify/easy-coding-standard": "^12.1",
         "tracy/tracy": "^2.10"
