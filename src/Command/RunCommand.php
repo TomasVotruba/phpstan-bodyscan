@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-final class CheckCommand extends Command
+final class RunCommand extends Command
 {
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
@@ -19,7 +19,7 @@ final class CheckCommand extends Command
 
     protected function configure(): void
     {
-        $this->setName('check');
+        $this->setName('run');
         $this->setDescription('Check classes that are not used in any config and in the code');
     }
 

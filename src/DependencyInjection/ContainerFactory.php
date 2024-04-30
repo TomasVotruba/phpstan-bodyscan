@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TomasVotruba\PHPStanBodyscan\Command\CheckCommand;
+use TomasVotruba\PHPStanBodyscan\Command\RunCommand;
 
 /**
  * @api
@@ -34,8 +34,8 @@ final class ContainerFactory
         );
 
         $container->singleton(Application::class, function (Container $container): Application {
-            /** @var CheckCommand $checkCommand */
-            $checkCommand = $container->make(CheckCommand::class);
+            /** @var RunCommand $checkCommand */
+            $checkCommand = $container->make(RunCommand::class);
 
             $application = new Application();
             $application->add($checkCommand);
