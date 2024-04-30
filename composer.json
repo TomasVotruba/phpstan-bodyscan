@@ -11,6 +11,7 @@
         "illuminate/container": "^11.0",
         "nette/utils": "^3.2",
         "symfony/console": "^6.4",
+        "symfony/process": "^7.0",
         "webmozart/assert": "^1.11"
     },
     "require-dev": {
