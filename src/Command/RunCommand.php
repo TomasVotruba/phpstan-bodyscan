@@ -64,7 +64,7 @@ final class RunCommand extends Command
             null,
             null,
             // timeout in seconds
-            200
+            200,
         ], $projectDirectory);
 
         $analyseLevelProcess->run();
