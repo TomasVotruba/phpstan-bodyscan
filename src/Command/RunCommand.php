@@ -9,17 +9,13 @@ use Nette\Utils\JsonException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
 final class RunCommand extends Command
 {
-    /**
-     * @var int
-     */
-    private const MAX_PHPSTAN_LEVEL = 8;
-
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
     ) {
@@ -30,14 +26,17 @@ final class RunCommand extends Command
     {
         $this->setName('run');
         $this->setDescription('Check classes that are not used in any config and in the code');
+        $this->addOption('max-level', null, InputOption::VALUE_REQUIRED, 'Max PHPStan level to run', 8);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $errorCountByLevel = [];
 
+        $maxPhpStanLevel = (int) $input->getOption('max-level');
+
         // measure phpstan levels
-        for ($phpStanLevel = 0; $phpStanLevel < self::MAX_PHPSTAN_LEVEL; ++$phpStanLevel) {
+        for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
 
             $errorCountByLevel[$phpStanLevel] = $this->measureErrorCountInLevel($phpStanLevel);
@@ -48,7 +47,7 @@ final class RunCommand extends Command
         return self::SUCCESS;
     }
 
-    private function measureErrorCountInLevel(int $phpstanLevel): int
+    private function measureErrorCountInLevel(int $phpStanLevel): int
     {
         // with json format
         $analyseLevelProcess = new Process([
@@ -57,13 +56,14 @@ final class RunCommand extends Command
             '--error-format',
             'json',
             '--level',
-            $phpstanLevel,
+            $phpStanLevel,
         ]);
 
         $analyseLevelProcess->run();
         $jsonResult = $analyseLevelProcess->getOutput();
 
         try {
+
             $json = Json::decode($jsonResult, true);
         } catch (JsonException $jsonException) {
             throw new JsonException(sprintf(
@@ -72,7 +72,7 @@ final class RunCommand extends Command
             ), 0, $jsonException);
         }
 
-        return (int) $json['totals']['errors'];
+        return (int) $json['totals']['file_errors'];
     }
 
     /**
