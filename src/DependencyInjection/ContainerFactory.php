@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace TomasVotruba\PHPStanBodyscan\DependencyInjection;
 
 use Illuminate\Container\Container;
-use PhpParser\Parser;
-use PhpParser\ParserFactory;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TomasVotruba\PHPStanBodyscan\Commands\CheckCommand;
+use TomasVotruba\PHPStanBodyscan\Command\CheckCommand;
 
 /**
  * @api
@@ -25,11 +23,6 @@ final class ContainerFactory
     public function create(): Container
     {
         $container = new Container();
-
-        $container->singleton(Parser::class, static function (): Parser {
-            $parserFactory = new ParserFactory();
-            return $parserFactory->create(ParserFactory::PREFER_PHP7);
-        });
 
         $container->singleton(
             SymfonyStyle::class,
