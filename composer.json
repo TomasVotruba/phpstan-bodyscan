@@ -18,6 +18,7 @@
         "rector/rector": "^1.0",
         "symplify/easy-ci": "^12.1",
         "symplify/easy-coding-standard": "^12.1",
+        "tomasvotruba/class-leak": "^0.2.13",
         "tomasvotruba/unused-public": "^0.3.8",
         "tracy/tracy": "^2.10"
     },
