@@ -43,7 +43,12 @@ final class RunCommand extends Command
 
         if (! file_exists($projectDirectory . '/vendor/phpstan')) {
             $this->symfonyStyle->note('PHPStan not found in the project... installing');
-            $requirePHPStanProcess = new Process(['composer', 'require', 'phpstan/phpstan', '--dev'], $projectDirectory);
+            $requirePHPStanProcess = new Process([
+                'composer',
+                'require',
+                'phpstan/phpstan',
+                '--dev',
+            ], $projectDirectory);
             $requirePHPStanProcess->mustRun();
         } else {
             $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
@@ -63,13 +68,16 @@ final class RunCommand extends Command
 
     private function measureErrorCountInLevel(int $phpStanLevel, string $projectDirectory): int
     {
-
-        $phpstanBinFilePath = file_exists($projectDirectory . '/vendor/bin/phpstan') ? 'vendor/bin/phpstan' : 'bin/phpstan';
+        $phpstanBinFilePath = file_exists(
+            $projectDirectory . '/vendor/bin/phpstan'
+        ) ? 'vendor/bin/phpstan' : 'bin/phpstan';
 
         // resolve source paths
         $possibleSourcePaths = ['app', 'src', 'tests'];
-        $sourcePaths = array_filter($possibleSourcePaths, fn (string $possibleSourcePath) => file_exists($projectDirectory . '/' . $possibleSourcePath));
-
+        $sourcePaths = array_filter(
+            $possibleSourcePaths,
+            fn (string $possibleSourcePath) => file_exists($projectDirectory . '/' . $possibleSourcePath)
+        );
 
         $analyseLevelProcess = new Process(
             // with json format
