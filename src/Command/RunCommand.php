@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
+use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
 
 final class RunCommand extends Command
 {
@@ -94,24 +95,15 @@ final class RunCommand extends Command
             200,
         );
 
-        var_dump($envFile);
-        if (file_exists($envFile)) {
-            // load env file
-            $envContent = file_get_contents($envFile);
-            $envLines = explode("\n", $envContent);
+        if (is_string($envFile) && file_exists($envFile)) {
+            $envVariables = FileLoader::resolveEnvVariablesFromFile($envFile);
+            $analyseLevelProcess->setEnv($envVariables);
 
-            // split by "="
-            foreach ($envLines as $envLine) {
-                $envLineParts = explode('=', $envLine);
-                if (count($envLineParts) !== 2) {
-                    continue;
-                }
-
-                $this->symfonyStyle->note(sprintf('Added env: "%s" with "%s"', $envLineParts[0], $envLineParts[1]));
-
-                $analyseLevelProcess->setEnv([$envLineParts[0] => $envLineParts[1]]);
-            }
+            $this->symfonyStyle->note('Adding envs:');
+            $this->symfonyStyle->listing($envVariables);
         }
+
+        die;
 
         $this->symfonyStyle->writeln('Running: ' . $analyseLevelProcess->getCommandLine());
 
@@ -158,7 +150,7 @@ final class RunCommand extends Command
         $this->symfonyStyle->createTable()
             ->setHeaders(['Level', 'Error count'])
             ->setRows($tableRows)
-            // allign right
+            // align right
             ->setStyle($tableStyle)
             ->render();
     }
