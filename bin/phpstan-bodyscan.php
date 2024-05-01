@@ -15,6 +15,7 @@ if (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
     require_once __DIR__ . '/../vendor/autoload.php';
 }
 
+// @todo remove container, make bare PHP :)
 $containerFactory = new ContainerFactory();
 $container = $containerFactory->create();
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\ValueObject;
 
+// @todo make use of
 final readonly class PHPStanLevelResult
 {
     public function __construct(

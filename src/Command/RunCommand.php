@@ -30,6 +30,8 @@ final class RunCommand extends Command
 
         $this->addArgument('directory', InputArgument::OPTIONAL, 'Directory to scan', getcwd());
         $this->addOption('max-level', null, InputOption::VALUE_REQUIRED, 'Max PHPStan level to run', 8);
+
+        $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -54,11 +56,14 @@ final class RunCommand extends Command
             $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
         }
 
+
+        $envFile = $input->getOption('env-file');
+
         // 2. measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
 
-            $errorCountByLevel[$phpStanLevel] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory);
+            $errorCountByLevel[$phpStanLevel] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envFile);
         }
 
         $this->renderResultInTable($errorCountByLevel);
@@ -66,7 +71,7 @@ final class RunCommand extends Command
         return self::SUCCESS;
     }
 
-    private function measureErrorCountInLevel(int $phpStanLevel, string $projectDirectory): int
+    private function measureErrorCountInLevel(int $phpStanLevel, string $projectDirectory, ?string $envFile): int
     {
         $phpstanBinFilePath = file_exists(
             $projectDirectory . '/vendor/bin/phpstan'
@@ -88,6 +93,25 @@ final class RunCommand extends Command
             // timeout in seconds
             200,
         );
+
+        var_dump($envFile);
+        if (file_exists($envFile)) {
+            // load env file
+            $envContent = file_get_contents($envFile);
+            $envLines = explode("\n", $envContent);
+
+            // split by "="
+            foreach ($envLines as $envLine) {
+                $envLineParts = explode('=', $envLine);
+                if (count($envLineParts) !== 2) {
+                    continue;
+                }
+
+                $this->symfonyStyle->note(sprintf('Added env: "%s" with "%s"', $envLineParts[0], $envLineParts[1]));
+
+                $analyseLevelProcess->setEnv([$envLineParts[0] => $envLineParts[1]]);
+            }
+        }
 
         $this->symfonyStyle->writeln('Running: ' . $analyseLevelProcess->getCommandLine());
 
