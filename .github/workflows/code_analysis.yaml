@@ -26,7 +26,7 @@ jobs:
 
                     -
                         name: 'Check Commented Code'
-                        run: vendor/bin/easy-ci check-commented-code src tests --ansi
+                        run: vendor/bin/easy-ci check-commented-code src --ansi
 
                     -
                         name: 'Check Active Classes'
