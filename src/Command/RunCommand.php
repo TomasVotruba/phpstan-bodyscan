@@ -15,6 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
+use TomasVotruba\PHPStanBodyscan\ValueObject\PHPStanLevelResult;
 
 final class RunCommand extends Command
 {
@@ -58,23 +59,25 @@ final class RunCommand extends Command
 
         $envFile = $input->getOption('env-file');
 
+        $phpStanLevels = [];
+
         // 2. measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
 
-            $errorCountByLevel[$phpStanLevel] = $this->measureErrorCountInLevel(
+            $phpStanLevels[] = $this->measureErrorCountInLevel(
                 $phpStanLevel,
                 $projectDirectory,
                 $envFile
             );
         }
 
-        $this->renderResultInTable($errorCountByLevel);
+        $this->renderResultInTable($phpStanLevels);
 
         return self::SUCCESS;
     }
 
-    private function measureErrorCountInLevel(int $phpStanLevel, string $projectDirectory, ?string $envFile): int
+    private function measureErrorCountInLevel(int $phpStanLevel, string $projectDirectory, ?string $envFile): PHPStanLevelResult
     {
         $phpstanBinFilePath = file_exists(
             $projectDirectory . '/vendor/bin/phpstan'
@@ -105,8 +108,6 @@ final class RunCommand extends Command
             $this->symfonyStyle->listing($envVariables);
         }
 
-        die;
-
         $this->symfonyStyle->writeln('Running: ' . $analyseLevelProcess->getCommandLine());
 
         $analyseLevelProcess->run();
@@ -131,18 +132,19 @@ final class RunCommand extends Command
             ));
         }
 
-        return (int) $json['totals']['file_errors'];
+        $fileErrorCount = (int) $json['totals']['file_errors'];
+        return new PHPStanLevelResult($phpStanLevel, $fileErrorCount);
     }
 
     /**
-     * @param array<int, int> $errorCountByLevel
+     * @param PHPStanLevelResult[] $phpStanLevelResults
      */
-    private function renderResultInTable(array $errorCountByLevel): void
+    private function renderResultInTable(array $phpStanLevelResults): void
     {
         // convert to symfony table data
         $tableRows = [];
-        foreach ($errorCountByLevel as $phpstanLevel => $errorCount) {
-            $tableRows[] = [$phpstanLevel, $errorCount];
+        foreach ($phpStanLevelResults as $phpStanLevelResult) {
+            $tableRows[] = [$phpStanLevelResult->getLevel(), $phpStanLevelResult->getErrorCount()];
         }
 
         $tableStyle = new TableStyle();
