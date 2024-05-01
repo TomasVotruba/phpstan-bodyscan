@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\Command;
 
-use Nette\Utils\Json;
-use Nette\Utils\JsonException;
+use JsonException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputArgument;
@@ -39,7 +38,9 @@ final class RunCommand extends Command
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         $projectDirectory = $input->getArgument('directory');
 
-        // measure phpstan levels
+        // 1.
+
+        // 2. measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
 
@@ -67,7 +68,7 @@ final class RunCommand extends Command
         $jsonResult = $analyseLevelProcess->getOutput();
 
         try {
-            $json = Json::decode($jsonResult, true);
+            $json = json_decode($jsonResult, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $jsonException) {
             throw new JsonException(sprintf(
                 'Could not decode JSON from phpstan: "%s"',

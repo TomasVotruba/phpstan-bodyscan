@@ -9,7 +9,6 @@
     "require": {
         "php": ">=8.2",
         "illuminate/container": "^11.0",
-        "nette/utils": "^4.0",
         "symfony/console": "^6.4",
         "symfony/process": "^7.0",
         "webmozart/assert": "^1.11"
