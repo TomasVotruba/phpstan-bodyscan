@@ -17,6 +17,8 @@ final class FileLoader
 
         // load env file
         $envContent = file_get_contents($envFile);
+        Assert::string($envContent);
+
         $envLines = explode("\n", $envContent);
 
         // split by "="
