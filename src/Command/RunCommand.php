@@ -98,9 +98,10 @@ final class RunCommand extends Command
         // fatal errors, they stop the analyss
         if ((int) $json['totals']['errors'] > 0) {
             throw new AnalysisFailedException(sprintf(
-                'PHPStan failed on level %d with %d fatal errors',
+                'PHPStan failed on level %d with %d fatal errors: "%s"',
                 $phpStanLevel,
-                (int) $json['totals']['errors']
+                (int) $json['totals']['errors'],
+                $jsonResult
             ));
         }
 
