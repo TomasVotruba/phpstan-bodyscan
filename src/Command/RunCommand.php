@@ -65,11 +65,7 @@ final class RunCommand extends Command
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
 
-            $phpStanLevels[] = $this->measureErrorCountInLevel(
-                $phpStanLevel,
-                $projectDirectory,
-                $envFile
-            );
+            $phpStanLevels[] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envFile);
         }
 
         $this->renderResultInTable($phpStanLevels);
@@ -77,8 +73,11 @@ final class RunCommand extends Command
         return self::SUCCESS;
     }
 
-    private function measureErrorCountInLevel(int $phpStanLevel, string $projectDirectory, ?string $envFile): PHPStanLevelResult
-    {
+    private function measureErrorCountInLevel(
+        int $phpStanLevel,
+        string $projectDirectory,
+        ?string $envFile
+    ): PHPStanLevelResult {
         $phpstanBinFilePath = file_exists(
             $projectDirectory . '/vendor/bin/phpstan'
         ) ? 'vendor/bin/phpstan' : 'bin/phpstan';
