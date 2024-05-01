@@ -38,7 +38,15 @@ final class RunCommand extends Command
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         $projectDirectory = $input->getArgument('directory');
 
-        // 1.
+        // 1. is phpstan installed in the project?
+
+        if (! file_exists($projectDirectory . '/vendor/phpstan')) {
+            $this->symfonyStyle->note('PHPStan not found in the project... installing');
+            $requirePHPStanProcess = new Process(['composer', 'require', 'phpstan/phpstan', '--dev'], $projectDirectory);
+            $requirePHPStanProcess->mustRun();
+        } else {
+            $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
+        }
 
         // 2. measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
@@ -54,15 +62,25 @@ final class RunCommand extends Command
 
     private function measureErrorCountInLevel(int $phpStanLevel, string $projectDirectory): int
     {
-        // with json format
+
+        $phpstanBinFilePath = file_exists($projectDirectory . '/vendor/bin/phpstan') ? 'vendor/bin/phpstan' : 'bin/phpstan';
+
+        // resolve source paths
+        $possibleSourcePaths = ['app', 'src', 'tests'];
+        $sourcePaths = array_filter($possibleSourcePaths, fn (string $possibleSourcePath) => file_exists($projectDirectory . '/' . $possibleSourcePath));
+
+
         $analyseLevelProcess = new Process(
-            ['vendor/bin/phpstan', 'analyse', '--error-format', 'json', '--level', $phpStanLevel],
+            // with json format
+            [$phpstanBinFilePath, 'analyse', ...$sourcePaths, '--error-format', 'json', '--level', $phpStanLevel],
             $projectDirectory,
             null,
             null,
             // timeout in seconds
             200,
         );
+
+        $this->symfonyStyle->writeln('Running: ' . $analyseLevelProcess->getCommandLine());
 
         $analyseLevelProcess->run();
         $jsonResult = $analyseLevelProcess->getOutput();
