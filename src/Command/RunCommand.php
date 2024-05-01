@@ -57,14 +57,17 @@ final class RunCommand extends Command
             $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
         }
 
-
         $envFile = $input->getOption('env-file');
 
         // 2. measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
 
-            $errorCountByLevel[$phpStanLevel] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envFile);
+            $errorCountByLevel[$phpStanLevel] = $this->measureErrorCountInLevel(
+                $phpStanLevel,
+                $projectDirectory,
+                $envFile
+            );
         }
 
         $this->renderResultInTable($errorCountByLevel);
