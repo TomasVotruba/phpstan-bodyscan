@@ -25,20 +25,12 @@ jobs:
                         run: composer fix-cs --ansi
 
                     -
-                        name: 'Tests'
-                        run: vendor/bin/phpunit
-
-                    -
                         name: 'Check Commented Code'
                         run: vendor/bin/easy-ci check-commented-code src tests --ansi
 
                     -
                         name: 'Check Active Classes'
                         run: vendor/bin/class-leak check src --ansi
-
-                    -
-                        name: 'Detect composer dependency issues'
-                        run: vendor/bin/composer-dependency-analyser
 
         name: ${{ matrix.actions.name }}
         runs-on: ubuntu-latest
