@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
+use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
 
 final class RunCommand extends Command
 {
@@ -92,6 +93,15 @@ final class RunCommand extends Command
                 'Could not decode JSON from phpstan: "%s"',
                 $jsonResult ?: $analyseLevelProcess->getErrorOutput()
             ), 0, $jsonException);
+        }
+
+        // fatal errors, they stop the analyss
+        if ((int) $json['totals']['errors'] > 0) {
+            throw new AnalysisFailedException(sprintf(
+                'PHPStan failed on level %d with %d fatal errors',
+                $phpStanLevel,
+                (int) $json['totals']['errors']
+            ));
         }
 
         return (int) $json['totals']['file_errors'];
