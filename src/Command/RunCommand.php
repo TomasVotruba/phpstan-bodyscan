@@ -19,6 +19,11 @@ use TomasVotruba\PHPStanBodyscan\ValueObject\PHPStanLevelResult;
 
 final class RunCommand extends Command
 {
+    /**
+     * @var int
+     */
+    private const TIMEOUT_IN_SECONDS = 400;
+
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
     ) {
@@ -96,7 +101,7 @@ final class RunCommand extends Command
             null,
             null,
             // timeout in seconds
-            200,
+            self::TIMEOUT_IN_SECONDS,
         );
 
         if (is_string($envFile) && file_exists($envFile)) {
@@ -104,7 +109,11 @@ final class RunCommand extends Command
             $analyseLevelProcess->setEnv($envVariables);
 
             $this->symfonyStyle->note('Adding envs:');
-            $this->symfonyStyle->listing($envVariables);
+            foreach ($envVariables as $name => $value) {
+                $this->symfonyStyle->writeln(' * ' . $name . ': ' . $value);
+            }
+
+            $this->symfonyStyle->newLine();
         }
 
         $this->symfonyStyle->writeln('Running: ' . $analyseLevelProcess->getCommandLine());
@@ -150,6 +159,7 @@ final class RunCommand extends Command
         $tableStyle->setPadType(STR_PAD_LEFT);
 
         $this->symfonyStyle->newLine(2);
+
         $this->symfonyStyle->createTable()
             ->setHeaders(['Level', 'Error count'])
             ->setRows($tableRows)

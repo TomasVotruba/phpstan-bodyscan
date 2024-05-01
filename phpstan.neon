@@ -4,3 +4,8 @@ parameters:
     paths:
         - bin
         - src
+
+    unused_public:
+        methods: true
+        constants: true
+        properties: true
