@@ -58,7 +58,7 @@ vendor/bin/phpstan-bodyscan run --max-level 3
 Some projects need to load `.env` file to run PHPStan. You can do it like this:
 
 ```bash
-vendor/bin/phpstan-bodyscan run --env-file .evn
+vendor/bin/phpstan-bodyscan run --env-file .env
 ```
 
 <br>
