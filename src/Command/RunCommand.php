@@ -45,19 +45,7 @@ final class RunCommand extends Command
         $projectDirectory = $input->getArgument('directory');
 
         // 1. is phpstan installed in the project?
-        if (! file_exists($projectDirectory . '/vendor/phpstan')) {
-            $this->symfonyStyle->note('PHPStan not found in the project... installing');
-            $requirePHPStanProcess = new Process([
-                'composer',
-                'require',
-                'phpstan/phpstan',
-                '--dev',
-            ], $projectDirectory);
-            $requirePHPStanProcess->mustRun();
-        } else {
-            $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
-            $this->symfonyStyle->newLine(2);
-        }
+        $this->ensurePHPStanIsInstalled($projectDirectory);
 
         $envFile = $input->getOption('env-file');
 
@@ -162,5 +150,22 @@ final class RunCommand extends Command
         }
 
         $this->symfonyStyle->newLine();
+    }
+
+    private function ensurePHPStanIsInstalled(string $projectDirectory): void
+    {
+        if (! file_exists($projectDirectory . '/vendor/phpstan')) {
+            $this->symfonyStyle->note('PHPStan not found in the project... installing');
+            $requirePHPStanProcess = new Process([
+                'composer',
+                'require',
+                'phpstan/phpstan',
+                '--dev',
+            ], $projectDirectory);
+            $requirePHPStanProcess->mustRun();
+        } else {
+            $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
+            $this->symfonyStyle->newLine(2);
+        }
     }
 }
