@@ -56,6 +56,7 @@ final class RunCommand extends Command
             $requirePHPStanProcess->mustRun();
         } else {
             $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
+            $this->symfonyStyle->newLine(2);
         }
 
         $envFile = $input->getOption('env-file');
@@ -63,15 +64,20 @@ final class RunCommand extends Command
         $phpStanLevelResults = [];
 
         // 1. prepare empty phpstan config
-        $phpStanBodyScanTemplateContents = file_get_contents(__DIR__ . '/../templates/phpstan-bodyscan.neon');
+        $phpStanBodyScanTemplateContents = file_get_contents(__DIR__ . '/../../templates/phpstan-bodyscan.neon');
         file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpStanBodyScanTemplateContents);
 
         // 2. measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
-            $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
+            $this->symfonyStyle->section(sprintf('Running PHPStan level %d', $phpStanLevel));
 
             $phpStanLevelResults[] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envFile);
+
+            $this->symfonyStyle->newLine();
         }
+
+        // 3. tidy up temporary config
+        unlink($projectDirectory . '/phpstan-bodyscan.neon');
 
         $this->renderResultInTable($phpStanLevelResults);
 
@@ -88,7 +94,7 @@ final class RunCommand extends Command
         $analyseLevelProcess = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel);
         $this->handleEnvFile($envFile, $analyseLevelProcess);
 
-        $this->symfonyStyle->writeln('Running: ' . $analyseLevelProcess->getCommandLine());
+        $this->symfonyStyle->writeln('Running: <fg=green>' . $analyseLevelProcess->getCommandLine() . '</>');
         $analyseLevelProcess->run();
 
         $jsonResult = $analyseLevelProcess->getOutput();

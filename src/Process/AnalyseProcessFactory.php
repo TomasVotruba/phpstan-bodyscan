@@ -53,7 +53,7 @@ final class AnalyseProcessFactory
             'json',
             '--level',
             $phpStanLevel,
-            '--config',
+            '--configuration',
             'phpstan-bodyscan.neon',
         ];
 
