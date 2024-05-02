@@ -26,7 +26,7 @@ vendor/bin/phpstan-bodyscan
 
 To get errors count per level:
 
-```bash
+```
 +-------+-------------+
 | Level | Error count |
 +-------+-------------+
@@ -40,6 +40,7 @@ To get errors count per level:
 |     7 |         350 |
 |     8 |         359 |
 +-------+-------------+
+```
 
 <br>
 
