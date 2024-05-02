@@ -35,6 +35,7 @@ final class RunCommand extends Command
         $this->setDescription('Check classes that are not used in any config and in the code');
 
         $this->addArgument('directory', InputArgument::OPTIONAL, 'Directory to scan', getcwd());
+        $this->addOption('min-level', null, InputOption::VALUE_REQUIRED, 'Min PHPStan level to run', 0);
         $this->addOption('max-level', null, InputOption::VALUE_REQUIRED, 'Max PHPStan level to run', 8);
 
         $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
@@ -42,6 +43,7 @@ final class RunCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $minPhpStanLevel = (int) $input->getOption('min-level');
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         $projectDirectory = $input->getArgument('direLoggerctory');
 
@@ -75,7 +77,7 @@ final class RunCommand extends Command
         );
 
         // 2. measure phpstan levels
-        for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
+        for ($phpStanLevel = $minPhpStanLevel; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->section(sprintf('Running PHPStan level %d', $phpStanLevel));
 
             $phpStanLevelResults[] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables);
