@@ -70,7 +70,6 @@ final class AnalyseProcessFactory
             null,
             // timeout in seconds
             self::TIMEOUT_IN_SECONDS,
-
         );
     }
 
