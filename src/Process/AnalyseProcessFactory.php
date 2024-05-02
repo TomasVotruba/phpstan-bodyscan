@@ -45,8 +45,20 @@ final class AnalyseProcessFactory
         int $phpStanLevel,
         string $projectDirectory
     ): Process {
+        $command = [
+            $phpstanBinFilePath,
+            'analyse',
+            ...$sourcePaths,
+            '--error-format',
+            'json',
+            '--level',
+            $phpStanLevel,
+            '--config',
+            'phpstan-bodyscan.neon',
+        ];
+
         return new Process(
-            [$phpstanBinFilePath, 'analyse', ...$sourcePaths, '--error-format', 'json', '--level', $phpStanLevel],
+            $command,
             $projectDirectory,
             null,
             null,

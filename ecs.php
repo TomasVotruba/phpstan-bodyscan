@@ -8,4 +8,7 @@ return ECSConfig::configure()
     ->withPaths([
         __DIR__ . '/src',
     ])
+    ->withRules([
+        \Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer::class,
+    ])
     ->withPreparedSets(psr12: true, common: true, symplify: true);

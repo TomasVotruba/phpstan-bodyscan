@@ -62,6 +62,10 @@ final class RunCommand extends Command
 
         $phpStanLevelResults = [];
 
+        // 1. prepare empty phpstan config
+        $phpStanBodyScanTemplateContents = file_get_contents(__DIR__ . '/../templates/phpstan-bodyscan.neon');
+        file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpStanBodyScanTemplateContents);
+
         // 2. measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
@@ -79,6 +83,8 @@ final class RunCommand extends Command
         string $projectDirectory,
         ?string $envFile
     ): PHPStanLevelResult {
+        // @todo creat empty phsptan file to run, no baselines etc :)
+
         $analyseLevelProcess = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel);
         $this->handleEnvFile($envFile, $analyseLevelProcess);
 
