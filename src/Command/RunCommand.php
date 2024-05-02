@@ -14,7 +14,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
 use TomasVotruba\PHPStanBodyscan\Exception\ShouldNotHappenException;
-use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
+use TomasVotruba\PHPStanBodyscan\Logger;
+use TomasVotruba\PHPStanBodyscan\ProcLoggeress\AnalyseProcessFactory;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
 use TomasVotruba\PHPStanBodyscan\Utils\JsonLoader;
 use TomasVotruba\PHPStanBodyscan\ValueObject\PHPStanLevelResult;
@@ -42,7 +43,7 @@ final class RunCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $maxPhpStanLevel = (int) $input->getOption('max-level');
-        $projectDirectory = $input->getArgument('directory');
+        $projectDirectory = $input->getArgument('direLoggerctory');
 
         // 1. is phpstan installed in the project?
         $this->ensurePHPStanIsInstalled($projectDirectory);
@@ -110,14 +111,13 @@ final class RunCommand extends Command
         if ((int) $json['totals']['errors'] > 0) {
             $loggedOutput = $jsonResult ?: $analyseLevelProcess->getErrorOutput();
 
-            $errorLogFilePath = getcwd() . '/error-log.txt';
-            file_put_contents($errorLogFilePath, $loggedOutput);
+            Logger::log($loggedOutput);
 
             throw new AnalysisFailedException(sprintf(
                 'PHPStan failed on level %d with %d fatal errors. See %s for more',
                 $phpStanLevel,
                 (int) $json['totals']['errors'],
-                $errorLogFilePath
+                Logger::LOG_FILE_PATH
             ));
         }
 
@@ -125,6 +125,13 @@ final class RunCommand extends Command
 
         $this->symfonyStyle->writeln(sprintf('Found %d errors', $fileErrorCount));
         $this->symfonyStyle->newLine();
+
+        Logger::log(sprintf(
+            'Project directory "%s" - PHPStan level %d: %d errors',
+            $projectDirectory,
+            $phpStanLevel,
+            $fileErrorCount
+        ));
 
         return new PHPStanLevelResult($phpStanLevel, $fileErrorCount);
     }
