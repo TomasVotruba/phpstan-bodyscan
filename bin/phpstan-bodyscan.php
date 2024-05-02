@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TomasVotruba\PHPStanBodyscan\Command\RunCommand;
+use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
 
 if (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
     // project's autoload
@@ -18,8 +19,7 @@ if (file_exists(__DIR__ . '/../../../../vendor/autoload.php')) {
 }
 
 $symfonyStyle = new SymfonyStyle(new ArrayInput([]), new ConsoleOutput());
-
-$runCommand = new RunCommand($symfonyStyle);
+$runCommand = new RunCommand($symfonyStyle, new AnalyseProcessFactory());
 
 $application = new Application();
 $application->add($runCommand);

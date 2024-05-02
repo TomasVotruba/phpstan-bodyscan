@@ -14,24 +14,16 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
 use TomasVotruba\PHPStanBodyscan\Exception\ShouldNotHappenException;
+use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
 use TomasVotruba\PHPStanBodyscan\Utils\JsonLoader;
 use TomasVotruba\PHPStanBodyscan\ValueObject\PHPStanLevelResult;
 
 final class RunCommand extends Command
 {
-    /**
-     * @var int
-     */
-    private const TIMEOUT_IN_SECONDS = 400;
-
-    /**
-     * @var string[]
-     */
-    private const POSSIBLE_SOURCE_PATHS = ['app', 'src', 'tests'];
-
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
+        private readonly AnalyseProcessFactory $analyseProcessFactory,
     ) {
         parent::__construct();
     }
@@ -87,21 +79,7 @@ final class RunCommand extends Command
         string $projectDirectory,
         ?string $envFile
     ): PHPStanLevelResult {
-        $phpStanBinFilePath = $this->resolvePhpStanBinFile($projectDirectory);
-
-        // resolve source paths
-        $sourcePaths = array_filter(
-            self::POSSIBLE_SOURCE_PATHS,
-            fn (string $possibleSourcePath) => file_exists($projectDirectory . '/' . $possibleSourcePath)
-        );
-
-        $analyseLevelProcess = $this->createAnalyseLevelProcess(
-            $phpStanBinFilePath,
-            $sourcePaths,
-            $phpStanLevel,
-            $projectDirectory
-        );
-
+        $analyseLevelProcess = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel);
         $this->handleEnvFile($envFile, $analyseLevelProcess);
 
         $this->symfonyStyle->writeln('Running: ' . $analyseLevelProcess->getCommandLine());
@@ -172,34 +150,5 @@ final class RunCommand extends Command
         }
 
         $this->symfonyStyle->newLine();
-    }
-
-    /**
-     * @param string[] $sourcePaths
-     */
-    private function createAnalyseLevelProcess(
-        string $phpstanBinFilePath,
-        array $sourcePaths,
-        int $phpStanLevel,
-        string $projectDirectory
-    ): Process {
-        return new Process(
-            [$phpstanBinFilePath, 'analyse', ...$sourcePaths, '--error-format', 'json', '--level', $phpStanLevel],
-            $projectDirectory,
-            null,
-            null,
-            // timeout in seconds
-            self::TIMEOUT_IN_SECONDS,
-        );
-    }
-
-    private function resolvePhpStanBinFile(string $projectDirectory): string
-    {
-        if (file_exists($projectDirectory . '/vendor/bin/phpstan')) {
-            return 'vendor/bin/phpstan';
-        }
-
-        // possible that /bin directory is used
-        return 'bin/phpstan';
     }
 }
