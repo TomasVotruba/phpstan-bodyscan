@@ -64,4 +64,12 @@ vendor/bin/phpstan-bodyscan run --env-file .evn
 
 <br>
 
+### Debugging
+
+Running PHPStan on a new project you don't know might crash. To save data from finished levels, we dump them to the `bodyscan-log.txt` file.
+
+If the run crashes for any reason, the PHPStan error output is also dumped to the same file.
+
+<br>
+
 Happy coding!
