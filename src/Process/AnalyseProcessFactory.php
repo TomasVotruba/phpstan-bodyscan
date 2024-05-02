@@ -25,7 +25,7 @@ final class AnalyseProcessFactory
         // resolve source paths
         $sourcePaths = array_filter(
             self::POSSIBLE_SOURCE_PATHS,
-            fn (string $possibleSourcePath) => file_exists($projectDirectory . '/' . $possibleSourcePath)
+            static fn (string $possibleSourcePath): bool => file_exists($projectDirectory . '/' . $possibleSourcePath)
         );
 
         return $this->createAnalyseLevelProcess(

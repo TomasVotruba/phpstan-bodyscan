@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer;
 
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
@@ -9,6 +10,6 @@ return ECSConfig::configure()
         __DIR__ . '/src',
     ])
     ->withRules([
-        \Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer::class,
+        LineLengthFixer::class,
     ])
     ->withPreparedSets(psr12: true, common: true, symplify: true);
