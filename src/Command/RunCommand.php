@@ -49,8 +49,6 @@ final class RunCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $errorCountByLevel = [];
-
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         $projectDirectory = $input->getArgument('directory');
 
@@ -70,16 +68,16 @@ final class RunCommand extends Command
 
         $envFile = $input->getOption('env-file');
 
-        $phpStanLevels = [];
+        $phpStanLevelResults = [];
 
         // 2. measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->writeln(sprintf('Running PHPStan level %d', $phpStanLevel));
 
-            $phpStanLevels[] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envFile);
+            $phpStanLevelResults[] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envFile);
         }
 
-        $this->renderResultInTable($phpStanLevels);
+        $this->renderResultInTable($phpStanLevelResults);
 
         return self::SUCCESS;
     }
