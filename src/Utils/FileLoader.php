@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TomasVotruba\PHPStanBodyscan\Utils;
 
 use TomasVotruba\PHPStanBodyscan\Exception\ShouldNotHappenException;
-use Webmozart\Assert\Assert;
 
 final class FileLoader
 {
