@@ -13,12 +13,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
-use TomasVotruba\PHPStanBodyscan\Exception\ShouldNotHappenException;
 use TomasVotruba\PHPStanBodyscan\Logger;
 use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
 use TomasVotruba\PHPStanBodyscan\Utils\JsonLoader;
 use TomasVotruba\PHPStanBodyscan\ValueObject\PHPStanLevelResult;
+use Webmozart\Assert\Assert;
 
 final class RunCommand extends Command
 {
@@ -53,9 +53,7 @@ final class RunCommand extends Command
         $envFile = $input->getOption('env-file');
         $envVariables = [];
         if (is_string($envFile)) {
-            if (! file_exists($envFile)) {
-                throw new ShouldNotHappenException(sprintf('Env file "%s" was not found.', $envFile));
-            }
+            Assert::fileExists($envFile);
 
             $envVariables = FileLoader::resolveEnvVariablesFromFile($envFile);
             $this->symfonyStyle->note(sprintf('Adding envs from "%s" file:', $envFile));

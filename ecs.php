@@ -7,6 +7,7 @@ use Symplify\EasyCodingStandard\Config\ECSConfig;
 
 return ECSConfig::configure()
     ->withPaths([
+        __DIR__ . '/bin',
         __DIR__ . '/src',
     ])
     ->withRules([
