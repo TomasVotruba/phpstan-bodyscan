@@ -9,8 +9,7 @@
     "require": {
         "php": ">=8.2",
         "symfony/console": "^6.4",
-        "symfony/process": "^7.0",
-        "webmozart/assert": "^1.11"
+        "symfony/process": "^7.0"
     },
     "require-dev": {
         "phpstan/extension-installer": "^1.3",
