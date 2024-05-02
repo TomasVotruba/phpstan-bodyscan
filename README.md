@@ -43,10 +43,22 @@ To get errors count per level:
 
 <br>
 
+### Limit level count
+
 Are you interested only in a few levels?
 
 ```bash
 vendor/bin/phpstan-bodyscan run --max-level 3
+```
+
+<br>
+
+### Load env file
+
+Some projects need to load `.env` file to run PHPStan. You can do it like this:
+
+```bash
+vendor/bin/phpstan-bodyscan run --env-file .evn
 ```
 
 <br>
