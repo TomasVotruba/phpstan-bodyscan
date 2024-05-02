@@ -97,7 +97,12 @@ final class RunCommand extends Command
             fn (string $possibleSourcePath) => file_exists($projectDirectory . '/' . $possibleSourcePath)
         );
 
-        $analyseLevelProcess = $this->createAnalyseLevelProcess($phpStanBinFilePath, $sourcePaths, $phpStanLevel, $projectDirectory);
+        $analyseLevelProcess = $this->createAnalyseLevelProcess(
+            $phpStanBinFilePath,
+            $sourcePaths,
+            $phpStanLevel,
+            $projectDirectory
+        );
 
         $this->handleEnvFile($envFile, $analyseLevelProcess);
 
