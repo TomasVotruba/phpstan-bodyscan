@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
+use TomasVotruba\PHPStanBodyscan\Exception\ShouldNotHappenException;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
 use TomasVotruba\PHPStanBodyscan\ValueObject\PHPStanLevelResult;
 
@@ -23,6 +24,11 @@ final class RunCommand extends Command
      * @var int
      */
     private const TIMEOUT_IN_SECONDS = 400;
+
+    /**
+     * @var string[]
+     */
+    private const POSSIBLE_SOURCE_PATHS = ['app', 'src', 'tests'];
 
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
@@ -83,42 +89,21 @@ final class RunCommand extends Command
         string $projectDirectory,
         ?string $envFile
     ): PHPStanLevelResult {
-        $phpstanBinFilePath = file_exists(
-            $projectDirectory . '/vendor/bin/phpstan'
-        ) ? 'vendor/bin/phpstan' : 'bin/phpstan';
+        $phpStanBinFilePath = $this->resolvePhpStanBinFile($projectDirectory);
 
         // resolve source paths
-        $possibleSourcePaths = ['app', 'src', 'tests'];
         $sourcePaths = array_filter(
-            $possibleSourcePaths,
+            self::POSSIBLE_SOURCE_PATHS,
             fn (string $possibleSourcePath) => file_exists($projectDirectory . '/' . $possibleSourcePath)
         );
 
-        $analyseLevelProcess = new Process(
-            // with json format
-            [$phpstanBinFilePath, 'analyse', ...$sourcePaths, '--error-format', 'json', '--level', $phpStanLevel],
-            $projectDirectory,
-            null,
-            null,
-            // timeout in seconds
-            self::TIMEOUT_IN_SECONDS,
-        );
+        $analyseLevelProcess = $this->createAnalyseLevelProcess($phpStanBinFilePath, $sourcePaths, $phpStanLevel, $projectDirectory);
 
-        if (is_string($envFile) && file_exists($envFile)) {
-            $envVariables = FileLoader::resolveEnvVariablesFromFile($envFile);
-            $analyseLevelProcess->setEnv($envVariables);
-
-            $this->symfonyStyle->note('Adding envs:');
-            foreach ($envVariables as $name => $value) {
-                $this->symfonyStyle->writeln(' * ' . $name . ': ' . $value);
-            }
-
-            $this->symfonyStyle->newLine();
-        }
+        $this->handleEnvFile($envFile, $analyseLevelProcess);
 
         $this->symfonyStyle->writeln('Running: ' . $analyseLevelProcess->getCommandLine());
-
         $analyseLevelProcess->run();
+
         $jsonResult = $analyseLevelProcess->getOutput();
 
         try {
@@ -141,6 +126,10 @@ final class RunCommand extends Command
         }
 
         $fileErrorCount = (int) $json['totals']['file_errors'];
+
+        $this->symfonyStyle->writeln(sprintf('Found %d errors', $fileErrorCount));
+        $this->symfonyStyle->newLine();
+
         return new PHPStanLevelResult($phpStanLevel, $fileErrorCount);
     }
 
@@ -166,5 +155,56 @@ final class RunCommand extends Command
             // align right
             ->setStyle($tableStyle)
             ->render();
+    }
+
+    private function handleEnvFile(?string $envFile, Process $process): void
+    {
+        if (! is_string($envFile)) {
+            return;
+        }
+
+        if (! file_exists($envFile)) {
+            throw new ShouldNotHappenException(sprintf('Env file "%s" was not found.', $envFile));
+        }
+
+        $envVariables = FileLoader::resolveEnvVariablesFromFile($envFile);
+        $process->setEnv($envVariables);
+
+        $this->symfonyStyle->note('Adding envs:');
+
+        foreach ($envVariables as $name => $value) {
+            $this->symfonyStyle->writeln(' * ' . $name . ': ' . $value);
+        }
+
+        $this->symfonyStyle->newLine();
+    }
+
+    /**
+     * @param string[] $sourcePaths
+     */
+    private function createAnalyseLevelProcess(
+        string $phpstanBinFilePath,
+        array $sourcePaths,
+        int $phpStanLevel,
+        string $projectDirectory
+    ): Process {
+        return new Process(
+            [$phpstanBinFilePath, 'analyse', ...$sourcePaths, '--error-format', 'json', '--level', $phpStanLevel],
+            $projectDirectory,
+            null,
+            null,
+            // timeout in seconds
+            self::TIMEOUT_IN_SECONDS,
+        );
+    }
+
+    private function resolvePhpStanBinFile(string $projectDirectory): string
+    {
+        if (file_exists($projectDirectory . '/vendor/bin/phpstan')) {
+            return 'vendor/bin/phpstan';
+        }
+
+        // possible that /bin directory is used
+        return 'bin/phpstan';
     }
 }
