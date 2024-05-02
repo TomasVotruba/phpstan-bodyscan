@@ -40,15 +40,16 @@ To get errors count per level:
 |     7 |         350 |
 |     8 |         359 |
 +-------+-------------+
+```
 
 <br>
 
 ### Limit level count
 
-Are you interested only in a few levels?
+Are you interested only in a few levels? You can limit ranges by the options:
 
 ```bash
-vendor/bin/phpstan-bodyscan run --max-level 3
+vendor/bin/phpstan-bodyscan run --min-level 0 --max-level 3
 ```
 
 <br>
