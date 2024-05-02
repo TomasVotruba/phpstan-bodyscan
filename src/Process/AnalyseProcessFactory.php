@@ -18,7 +18,10 @@ final class AnalyseProcessFactory
      */
     private const POSSIBLE_SOURCE_PATHS = ['app', 'src', 'tests'];
 
-    public function create(string $projectDirectory, int $phpStanLevel): Process
+    /**
+     * @param array<string, mixed> $envVariables
+     */
+    public function create(string $projectDirectory, int $phpStanLevel, array $envVariables): Process
     {
         $phpStanBinFilePath = $this->resolvePhpStanBinFile($projectDirectory);
 
@@ -32,18 +35,21 @@ final class AnalyseProcessFactory
             $phpStanBinFilePath,
             $sourcePaths,
             $phpStanLevel,
-            $projectDirectory
+            $projectDirectory,
+            $envVariables
         );
     }
 
     /**
      * @param string[] $sourcePaths
+     * @param array<string, mixed> $envVariables
      */
     private function createAnalyseLevelProcess(
         string $phpstanBinFilePath,
         array $sourcePaths,
         int $phpStanLevel,
-        string $projectDirectory
+        string $projectDirectory,
+        array $envVariables
     ): Process {
         $command = [
             $phpstanBinFilePath,
@@ -60,10 +66,11 @@ final class AnalyseProcessFactory
         return new Process(
             $command,
             $projectDirectory,
-            null,
+            $envVariables,
             null,
             // timeout in seconds
             self::TIMEOUT_IN_SECONDS,
+
         );
     }
 

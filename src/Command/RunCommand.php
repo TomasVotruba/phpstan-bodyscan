@@ -48,18 +48,33 @@ final class RunCommand extends Command
         $this->ensurePHPStanIsInstalled($projectDirectory);
 
         $envFile = $input->getOption('env-file');
+        $envVariables = [];
+        if (is_string($envFile)) {
+            if (! file_exists($envFile)) {
+                throw new ShouldNotHappenException(sprintf('Env file "%s" was not found.', $envFile));
+            }
+
+            $envVariables = FileLoader::resolveEnvVariablesFromFile($envFile);
+            $this->symfonyStyle->note('Adding envs:');
+
+            foreach ($envVariables as $name => $value) {
+                $this->symfonyStyle->writeln(' * ' . $name . ': ' . $value);
+            }
+
+            $this->symfonyStyle->newLine();
+        }
 
         $phpStanLevelResults = [];
 
         // 1. prepare empty phpstan config
-        $phpStanBodyScanTemplateContents = file_get_contents(__DIR__ . '/../../templates/phpstan-bodyscan.neon');
-        file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpStanBodyScanTemplateContents);
+        // no baselines, ignores etc. etc :)
+        file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', 'parameters: ' . PHP_EOL);
 
         // 2. measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->section(sprintf('Running PHPStan level %d', $phpStanLevel));
 
-            $phpStanLevelResults[] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envFile);
+            $phpStanLevelResults[] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables);
 
             $this->symfonyStyle->newLine();
         }
@@ -75,12 +90,9 @@ final class RunCommand extends Command
     private function measureErrorCountInLevel(
         int $phpStanLevel,
         string $projectDirectory,
-        ?string $envFile
+        array $envVariables
     ): PHPStanLevelResult {
-        // @todo creat empty phsptan file to run, no baselines etc :)
-
-        $analyseLevelProcess = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel);
-        $this->handleEnvFile($envFile, $analyseLevelProcess);
+        $analyseLevelProcess = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel, $envVariables);
 
         $this->symfonyStyle->writeln('Running: <fg=green>' . $analyseLevelProcess->getCommandLine() . '</>');
         $analyseLevelProcess->run();
@@ -132,17 +144,6 @@ final class RunCommand extends Command
 
     private function handleEnvFile(?string $envFile, Process $process): void
     {
-        if (! is_string($envFile)) {
-            return;
-        }
-
-        if (! file_exists($envFile)) {
-            throw new ShouldNotHappenException(sprintf('Env file "%s" was not found.', $envFile));
-        }
-
-        $envVariables = FileLoader::resolveEnvVariablesFromFile($envFile);
-        $process->setEnv($envVariables);
-
         $this->symfonyStyle->note('Adding envs:');
 
         foreach ($envVariables as $name => $value) {
