@@ -68,7 +68,7 @@ final class RunCommand extends Command
 
         // 1. prepare empty phpstan config
         // no baselines, ignores etc. etc :)
-        file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', 'parameters: ' . PHP_EOL);
+        file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', "parameters:\n    reportUnmatchedIgnoredErrors: false\n" . PHP_EOL);
 
         // 2. measure phpstan levels
         for ($phpStanLevel = 0; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
