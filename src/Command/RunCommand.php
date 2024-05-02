@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\Command;
 
-use JsonException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,6 +15,7 @@ use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
 use TomasVotruba\PHPStanBodyscan\Exception\ShouldNotHappenException;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
+use TomasVotruba\PHPStanBodyscan\Utils\JsonLoader;
 use TomasVotruba\PHPStanBodyscan\ValueObject\PHPStanLevelResult;
 
 final class RunCommand extends Command
@@ -110,15 +110,7 @@ final class RunCommand extends Command
         $analyseLevelProcess->run();
 
         $jsonResult = $analyseLevelProcess->getOutput();
-
-        try {
-            $json = json_decode($jsonResult, true, 512, JSON_THROW_ON_ERROR);
-        } catch (JsonException $jsonException) {
-            throw new JsonException(sprintf(
-                'Could not decode JSON from phpstan: "%s"',
-                $jsonResult ?: $analyseLevelProcess->getErrorOutput()
-            ), 0, $jsonException);
-        }
+        $json = JsonLoader::loadToArray($jsonResult);
 
         // fatal errors, they stop the analyss
         if ((int) $json['totals']['errors'] > 0) {
