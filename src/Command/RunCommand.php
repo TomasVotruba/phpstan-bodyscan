@@ -45,7 +45,7 @@ final class RunCommand extends Command
     {
         $minPhpStanLevel = (int) $input->getOption('min-level');
         $maxPhpStanLevel = (int) $input->getOption('max-level');
-        $projectDirectory = $input->getArgument('direLoggerctory');
+        $projectDirectory = $input->getArgument('directory');
 
         // 1. is phpstan installed in the project?
         $this->ensurePHPStanIsInstalled($projectDirectory);
