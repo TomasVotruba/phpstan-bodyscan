@@ -109,13 +109,15 @@ final class RunCommand extends Command
         // fatal errors, they stop the analyss
         if ((int) $json['totals']['errors'] > 0) {
             $loggedOutput = $jsonResult ?: $analyseLevelProcess->getErrorOutput();
-            file_put_contents(getcwd() . '/error-log.txt', $loggedOutput);
+
+            $errorLogFilePath = getcwd() . '/error-log.txt';
+            file_put_contents($errorLogFilePath, $loggedOutput);
 
             throw new AnalysisFailedException(sprintf(
-                'PHPStan failed on level %d with %d fatal errors: "%s"',
+                'PHPStan failed on level %d with %d fatal errors. See %s for more',
                 $phpStanLevel,
                 (int) $json['totals']['errors'],
-                $loggedOutput
+                $errorLogFilePath
             ));
         }
 
