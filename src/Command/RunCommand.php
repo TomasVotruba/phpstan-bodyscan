@@ -55,7 +55,7 @@ final class RunCommand extends Command
             }
 
             $envVariables = FileLoader::resolveEnvVariablesFromFile($envFile);
-            $this->symfonyStyle->note('Adding envs:');
+            $this->symfonyStyle->note(sprintf('Adding envs from "%s" file:', $envFile));
 
             foreach ($envVariables as $name => $value) {
                 $this->symfonyStyle->writeln(' * ' . $name . ': ' . $value);
