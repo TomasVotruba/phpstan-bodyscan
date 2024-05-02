@@ -15,7 +15,7 @@ use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
 use TomasVotruba\PHPStanBodyscan\Exception\ShouldNotHappenException;
 use TomasVotruba\PHPStanBodyscan\Logger;
-use TomasVotruba\PHPStanBodyscan\ProcLoggeress\AnalyseProcessFactory;
+use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
 use TomasVotruba\PHPStanBodyscan\Utils\JsonLoader;
 use TomasVotruba\PHPStanBodyscan\ValueObject\PHPStanLevelResult;

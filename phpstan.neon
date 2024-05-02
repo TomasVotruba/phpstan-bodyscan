@@ -22,3 +22,6 @@ parameters:
         param: 99
         property: 99
         return: 99
+
+    ignoreErrors:
+        - '#Relative file path \"bodyscan-log\.txt\" is not allowed, use absolute one with __DIR__#'
