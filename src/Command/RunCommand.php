@@ -110,7 +110,7 @@ final class RunCommand extends Command
         $analyseLevelProcess->run();
 
         $jsonResult = $analyseLevelProcess->getOutput();
-        $json = JsonLoader::loadToArray($jsonResult);
+        $json = JsonLoader::loadToArray($jsonResult, $analyseLevelProcess);
 
         // fatal errors, they stop the analyss
         if ((int) $json['totals']['errors'] > 0) {
