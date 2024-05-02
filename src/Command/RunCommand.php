@@ -87,6 +87,9 @@ final class RunCommand extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * @param array<string, mixed> $envVariables
+     */
     private function measureErrorCountInLevel(
         int $phpStanLevel,
         string $projectDirectory,
@@ -140,17 +143,6 @@ final class RunCommand extends Command
             // align right
             ->setStyle($tableStyle)
             ->render();
-    }
-
-    private function handleEnvFile(?string $envFile, Process $process): void
-    {
-        $this->symfonyStyle->note('Adding envs:');
-
-        foreach ($envVariables as $name => $value) {
-            $this->symfonyStyle->writeln(' * ' . $name . ': ' . $value);
-        }
-
-        $this->symfonyStyle->newLine();
     }
 
     private function ensurePHPStanIsInstalled(string $projectDirectory): void
