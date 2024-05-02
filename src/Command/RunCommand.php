@@ -53,8 +53,6 @@ final class RunCommand extends Command
         $envFile = $input->getOption('env-file');
         $envVariables = [];
         if (is_string($envFile)) {
-            Assert::fileExists($envFile);
-
             $envVariables = FileLoader::resolveEnvVariablesFromFile($envFile);
             $this->symfonyStyle->note(sprintf('Adding envs from "%s" file:', $envFile));
 

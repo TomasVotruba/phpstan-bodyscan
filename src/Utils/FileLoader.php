@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\Utils;
 
-use TomasVotruba\PHPStanBodyscan\Exception\ShouldNotHappenException;
+use Webmozart\Assert\Assert;
 
 final class FileLoader
 {
@@ -13,9 +13,7 @@ final class FileLoader
      */
     public static function resolveEnvVariablesFromFile(string $envFile): array
     {
-        if (! file_exists($envFile)) {
-            throw new ShouldNotHappenException(sprintf('Env file "%s" was not found.', $envFile));
-        }
+        Assert::fileExists($envFile);
 
         // load env file
         /** @var string $envContent */
