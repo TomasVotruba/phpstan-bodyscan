@@ -1,11 +1,27 @@
+# https://github.com/symplify/phpstan-rules
+includes:
+    - vendor/symplify/phpstan-rules/config/code-complexity-rules.neon
+    - vendor/symplify/phpstan-rules/config/collector-rules.neon
+    - vendor/symplify/phpstan-rules/config/naming-rules.neon
+    - vendor/symplify/phpstan-rules/config/regex-rules.neon
+    - vendor/symplify/phpstan-rules/config/static-rules.neon
+
 parameters:
     level: 8
 
     paths:
         - bin
         - src
-        - tests
 
-    excludePaths:
-        - */Fixture/*
-        - */Source/*
+    unused_public:
+        methods: true
+        constants: true
+        properties: true
+
+    type_coverage:
+        param: 99
+        property: 99
+        return: 99
+
+    ignoreErrors:
+        - '#Relative file path \"bodyscan-log\.txt\" is not allowed, use absolute one with __DIR__#'

@@ -1,13 +1,4 @@
 composer.lock
 /vendor
 
-.phpunit.cache
-
-
-bootstrap/cache/*
-!bootstrap/cache/.gitkeep
-
-storage/*
-
-# avoid commiting scoper phar file
-php-scoper.phar
+bodyscan-log.txt

@@ -1,44 +1,74 @@
-# Class Leak
+# PHPStan Bodyscan
 
-[![Downloads total](https://img.shields.io/packagist/dt/tomasvotruba/class-leak.svg?style=flat-square)](https://packagist.org/packages/tomasvotruba/class-leak/stats)
+[![Downloads total](https://img.shields.io/packagist/dt/tomasvotruba/phpstan-bodyscan.svg?style=flat-square)](https://packagist.org/packages/tomasvotruba/phpstan-bodyscan/stats)
 
-Find leaking classes that you never use... and get rid of them.
+Do you want to get quick glimpse of new project code quality?
+
+Get error count for each PHPStan level!
+
 
 ## Install
 
 ```bash
-composer require tomasvotruba/class-leak --dev
+composer require tomasvotruba/phpstan-bodyscan --dev
 ```
 
 ## Usage
 
-Pass directories you want to check:
+Run tool in your project. It will take some time, as it will run PHPStan for each level.
+
 
 ```bash
-vendor/bin/class-leak check bin src
+vendor/bin/phpstan-bodyscan
 ```
 
-Make sure to exclude `/tests` directories, to keep reporting classes that are used in tests, but never used in the code-base.
+↓
+
+To get errors count per level:
+
+```bash
++-------+-------------+
+| Level | Error count |
++-------+-------------+
+|     0 |           0 |
+|     1 |          35 |
+|     2 |          59 |
+|     3 |          93 |
+|     4 |         120 |
+|     5 |         125 |
+|     6 |         253 |
+|     7 |         350 |
+|     8 |         359 |
++-------+-------------+
+```
 
 <br>
 
-Many types are excluded by default, as they're collected by framework magic, e.g. console command classes. To exclude another class, e.g. your interface collector, use `--skip-type`:
+### Limit level count
+
+Are you interested only in a few levels? You can limit ranges by the options:
 
 ```bash
-vendor/bin/class-leak check bin src --skip-type="App\\Contract\\SomeInterface"
+vendor/bin/phpstan-bodyscan run --min-level 0 --max-level 3
 ```
 
-What if your classes do no implement any type? Use `--skip-suffix` instead:
+<br>
+
+### Load env file
+
+Some projects need to load `.env` file to run PHPStan. You can do it like this:
 
 ```bash
-vendor/bin/class-leak check bin src --skip-suffix "Controller"
+vendor/bin/phpstan-bodyscan run --env-file some-parameters.env
 ```
 
-If you want to skip classes that use a specific attribute or have methods that use a specific attribute, use `--skip-attribute`:
+<br>
 
-```bash
-vendor/bin/class-leak check bin src --skip-attribute "Symfony\\Component\\HttpKernel\\Attribute\\AsController"
-```
+### Debugging
+
+Running PHPStan on a new project you don't know might crash. To save data from finished levels, we dump them to the `bodyscan-log.txt` file.
+
+If the run crashes for any reason, the PHPStan error output is also dumped to the same file.
 
 <br>
 
