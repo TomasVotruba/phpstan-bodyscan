@@ -35,7 +35,6 @@
         }
     },
     "replace": {
-        "symfony/string": "*",
         "symfony/polyfill-ctype": "*",
         "symfony/polyfill-intl-grapheme": "*",
         "symfony/polyfill-mbstring": "*"
