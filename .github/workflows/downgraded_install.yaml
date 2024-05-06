@@ -1,0 +1,24 @@
+name: Downgraded Install
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    downgraded_install:
+        runs-on: ubuntu-latest
+
+        steps:
+            # see https://github.com/shivammathur/setup-php
+            -   uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 7.2
+                    coverage: none
+
+            # add some packages that could create confligs
+            -   run: composer require symfony/console:^4.4 --ansi
+
+            # install this package
+            -   run: composer require tomasvotruba/phpstan-bodyscan --ansi
+            -   run: vendor/bin/phpstan-bodyscan list --ansi
