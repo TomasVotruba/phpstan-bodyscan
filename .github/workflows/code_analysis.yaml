@@ -26,7 +26,7 @@ jobs:
 
                     -
                         name: 'Check Active Classes'
-                        run: vendor/bin/class-leak check src --ansi
+                        run: vendor/bin/phpstan-bodyscan check src --ansi
 
         name: ${{ matrix.actions.name }}
         runs-on: ubuntu-latest

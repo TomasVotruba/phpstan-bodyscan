@@ -45,7 +45,7 @@ ls -l $RESULT_DIRECTORY
 note "Dumping Composer Autoload"
 composer dump-autoload --working-dir "$RESULT_DIRECTORY" --ansi --classmap-authoritative --no-dev
 
-# make bin/class-leak runnable without "php"
+# make bin/phpstan-bodyscan runnable without "php"
 chmod 777 "$RESULT_DIRECTORY/bin/phpstan-bodyscan"
 chmod 777 "$RESULT_DIRECTORY/bin/phpstan-bodyscan.php"
 

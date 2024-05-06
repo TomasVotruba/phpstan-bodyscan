@@ -41,7 +41,7 @@ note "Dumping Composer Autoload"
 composer dump-autoload --ansi --classmap-authoritative --no-dev
 
 # make bin runnable without "php"
-chmod 777 "bin/class-leak"
-chmod 777 "bin/class-leak.php"
+chmod 777 "bin/phpstan-bodyscan"
+chmod 777 "bin/phpstan-bodyscan.php"
 
 note "Finished"
