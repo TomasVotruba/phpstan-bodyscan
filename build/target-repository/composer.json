@@ -13,8 +13,5 @@
         "psr-4": {
             "TomasVotruba\\PHPStanBodyscan\\": "src"
         }
-    },
-    "config": {
-        "platform-check": false
     }
 }
