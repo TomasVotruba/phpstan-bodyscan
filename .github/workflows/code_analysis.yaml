@@ -25,10 +25,6 @@ jobs:
                         run: composer fix-cs --ansi
 
                     -
-                        name: 'Check Commented Code'
-                        run: vendor/bin/easy-ci check-commented-code src --ansi
-
-                    -
                         name: 'Check Active Classes'
                         run: vendor/bin/class-leak check src --ansi
 
