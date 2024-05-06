@@ -34,6 +34,12 @@
             "phpstan/extension-installer": true
         }
     },
+    "replace": {
+        "symfony/string": "*",
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-intl-grapheme": "*",
+        "symfony/polyfill-mbstring": "*"
+    },
     "scripts": {
         "check-cs": "vendor/bin/ecs check --ansi",
         "fix-cs": "vendor/bin/ecs check --fix --ansi",
