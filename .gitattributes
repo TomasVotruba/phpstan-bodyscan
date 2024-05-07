@@ -1,4 +1,17 @@
-.gitattributes export-ignore
-.gitignore export-ignore
+# This file was partly modified by the lean package validator (http://git.io/lean-package-validator).
+
 *.md export-ignore
-tests export-ignore
+.editorconfig export-ignore
+.gitattributes export-ignore
+.github/ export-ignore
+.gitignore export-ignore
+build/ export-ignore
+ecs.php export-ignore
+full-tool-build.sh export-ignore
+LICENSE export-ignore
+phpstan-bodyscan.neon export-ignore
+phpstan.neon export-ignore
+phpunit.neon export-ignore
+README.md export-ignore
+rector.php export-ignore
+scoper.php export-ignore
