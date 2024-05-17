@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TomasVotruba\PHPStanBodyscan\Process;
 
 use Symfony\Component\Process\Process;
+use TomasVotruba\PHPStanBodyscan\Utils\ComposerLoader;
 
 final class AnalyseProcessFactory
 {
