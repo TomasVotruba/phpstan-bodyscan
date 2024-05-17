@@ -75,6 +75,10 @@ final class AnalyseProcessFactory
 
     private function resolvePhpStanBinFile(string $projectDirectory): string
     {
+        if (file_exists(ComposerLoader::getBinDirectory($projectDirectory) . '/phpstan')) {
+            return ComposerLoader::getBinDirectory($projectDirectory) . '/phpstan';
+        }
+
         if (file_exists($projectDirectory . '/vendor/bin/phpstan')) {
             return 'vendor/bin/phpstan';
         }
