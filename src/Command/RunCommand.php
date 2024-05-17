@@ -15,6 +15,7 @@ use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
 use TomasVotruba\PHPStanBodyscan\Logger;
 use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
+use TomasVotruba\PHPStanBodyscan\Utils\ComposerLoader;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
 use TomasVotruba\PHPStanBodyscan\Utils\JsonLoader;
 use TomasVotruba\PHPStanBodyscan\ValueObject\PHPStanLevelResult;
@@ -45,9 +46,10 @@ final class RunCommand extends Command
         $minPhpStanLevel = (int) $input->getOption('min-level');
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         $projectDirectory = $input->getArgument('directory');
+        $binDirectory = ComposerLoader::getBinDirectory($projectDirectory) ?? '/vendor/bin/';
 
         // 1. is phpstan installed in the project?
-        $this->ensurePHPStanIsInstalled($projectDirectory);
+        $this->ensurePHPStanIsInstalled($projectDirectory, $binDirectory);
 
         $envFile = $input->getOption('env-file');
         $envVariables = [];
@@ -157,9 +159,9 @@ final class RunCommand extends Command
             ->render();
     }
 
-    private function ensurePHPStanIsInstalled(string $projectDirectory): void
+    private function ensurePHPStanIsInstalled(string $projectDirectory, string $binDirectory): void
     {
-        if (! file_exists($projectDirectory . '/vendor/phpstan')) {
+        if (! file_exists($binDirectory . '/phpstan')) {
             $this->symfonyStyle->note('PHPStan not found in the project... installing');
             $requirePHPStanProcess = new Process([
                 'composer',
