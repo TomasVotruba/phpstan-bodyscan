@@ -69,21 +69,8 @@ final class RunCommand extends Command
 
         // 1. prepare empty phpstan config
         // no baselines, ignores etc. etc :)
-
-        $phpstanConfiguration = [];
-        $projectPHPStanFile = $projectDirectory . '/phpstan.neon';
-
-        // make use of existing phpstan paths if found
-        if (file_exists($projectPHPStanFile)) {
-            $projectPHPStan = Neon::decodeFile($projectPHPStanFile);
-            $phpstanConfiguration['parameters']['paths'] = $projectPHPStan['parameters']['paths'] ?? [];
-            $phpstanConfiguration['parameters']['excludePaths'] = $projectPHPStan['parameters']['excludePaths'] ?? [];
-        }
-
-        file_put_contents(
-            $projectDirectory . '/phpstan-bodyscan.neon',
-            Neon::encode($phpstanConfiguration, true, '    ')
-        );
+        $phpstanConfiguration = $this->createBaselinePHPStanConfiguration($projectDirectory);
+        file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpstanConfiguration);
 
         // 2. measure phpstan levels
         for ($phpStanLevel = $minPhpStanLevel; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
@@ -186,5 +173,23 @@ final class RunCommand extends Command
             $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
             $this->symfonyStyle->newLine(2);
         }
+    }
+
+    private function createBaselinePHPStanConfiguration(string $projectDirectory): string
+    {
+        $projectPHPStanFile = $projectDirectory . '/phpstan.neon';
+
+        // make use of existing phpstan paths if found
+        if (! file_exists($projectPHPStanFile)) {
+            return '';
+        }
+
+        $projectPHPStan = Neon::decodeFile($projectPHPStanFile);
+
+        $phpstanConfiguration = [];
+        $phpstanConfiguration['parameters']['paths'] = $projectPHPStan['parameters']['paths'] ?? [];
+        $phpstanConfiguration['parameters']['excludePaths'] = $projectPHPStan['parameters']['excludePaths'] ?? [];
+
+        return Neon::encode($phpstanConfiguration, true, '    ');
     }
 }
