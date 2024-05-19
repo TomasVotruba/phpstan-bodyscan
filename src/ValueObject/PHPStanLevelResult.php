@@ -1,23 +1,30 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 namespace TomasVotruba\PHPStanBodyscan\ValueObject;
 
-final readonly class PHPStanLevelResult
+final class PHPStanLevelResult
 {
-    public function __construct(
-        private int $level,
-        private int $errorCount
-    ) {
+    /**
+     * @readonly
+     * @var int
+     */
+    private $level;
+    /**
+     * @readonly
+     * @var int
+     */
+    private $errorCount;
+    public function __construct(int $level, int $errorCount)
+    {
+        $this->level = $level;
+        $this->errorCount = $errorCount;
     }
-
-    public function getLevel(): int
+    public function getLevel() : int
     {
         return $this->level;
     }
-
-    public function getErrorCount(): int
+    public function getErrorCount() : int
     {
         return $this->errorCount;
     }
