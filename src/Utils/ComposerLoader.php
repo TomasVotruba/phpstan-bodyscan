@@ -6,14 +6,19 @@ namespace TomasVotruba\PHPStanBodyscan\Utils;
 
 final class ComposerLoader
 {
-    public static function getBinDirectory(string $projectDirectory): ?string
+    /**
+     * @var string
+     */
+    private const DEFAULT_VENDOR_BIN = '/vendor/bin/';
+
+    public static function getBinDirectory(string $projectDirectory): string
     {
         $content = file_get_contents($projectDirectory . '/composer.json');
         if (is_string($content)) {
             $content = json_decode($content, true);
-            return $content['config']['bin-dir'] ?? null;
+            return $content['config']['bin-dir'] ?? self::DEFAULT_VENDOR_BIN;
         }
 
-        return null;
+        return self::DEFAULT_VENDOR_BIN;
     }
 }

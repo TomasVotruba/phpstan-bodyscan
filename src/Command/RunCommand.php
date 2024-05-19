@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\Command;
 
-use Nette\Neon\Neon;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputArgument;
@@ -15,6 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
 use TomasVotruba\PHPStanBodyscan\Logger;
+use TomasVotruba\PHPStanBodyscan\PHPStanConfigFactory;
 use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
 use TomasVotruba\PHPStanBodyscan\Utils\ComposerLoader;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
@@ -26,6 +26,7 @@ final class RunCommand extends Command
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
         private readonly AnalyseProcessFactory $analyseProcessFactory,
+        private readonly PHPStanConfigFactory $phpStanConfigFactory
     ) {
         parent::__construct();
     }
@@ -47,10 +48,11 @@ final class RunCommand extends Command
         $minPhpStanLevel = (int) $input->getOption('min-level');
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         $projectDirectory = $input->getArgument('directory');
-        $binDirectory = ComposerLoader::getBinDirectory($projectDirectory) ?? '/vendor/bin/';
+
+        $vendorBinDirectory = ComposerLoader::getBinDirectory($projectDirectory);
 
         // 1. is phpstan installed in the project?
-        $this->ensurePHPStanIsInstalled($projectDirectory, $binDirectory);
+        $this->ensurePHPStanIsInstalled($projectDirectory, $vendorBinDirectory);
 
         $envFile = $input->getOption('env-file');
         $envVariables = [];
@@ -69,7 +71,7 @@ final class RunCommand extends Command
 
         // 1. prepare empty phpstan config
         // no baselines, ignores etc. etc :)
-        $phpstanConfiguration = $this->createBaselinePHPStanConfiguration($projectDirectory);
+        $phpstanConfiguration = $this->phpStanConfigFactory->create($projectDirectory);
         file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpstanConfiguration);
 
         // 2. measure phpstan levels
@@ -158,9 +160,9 @@ final class RunCommand extends Command
             ->render();
     }
 
-    private function ensurePHPStanIsInstalled(string $projectDirectory, string $binDirectory): void
+    private function ensurePHPStanIsInstalled(string $projectDirectory, string $vendorBinDirectory): void
     {
-        if (! file_exists($binDirectory . '/phpstan')) {
+        if (! file_exists($vendorBinDirectory . '/phpstan')) {
             $this->symfonyStyle->note('PHPStan not found in the project... installing');
             $requirePHPStanProcess = new Process([
                 'composer',
@@ -168,28 +170,11 @@ final class RunCommand extends Command
                 'phpstan/phpstan',
                 '--dev',
             ], $projectDirectory);
+
             $requirePHPStanProcess->mustRun();
         } else {
             $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
             $this->symfonyStyle->newLine(2);
         }
-    }
-
-    private function createBaselinePHPStanConfiguration(string $projectDirectory): string
-    {
-        $projectPHPStanFile = $projectDirectory . '/phpstan.neon';
-
-        // make use of existing phpstan paths if found
-        if (! file_exists($projectPHPStanFile)) {
-            return '';
-        }
-
-        $projectPHPStan = Neon::decodeFile($projectPHPStanFile);
-
-        $phpstanConfiguration = [];
-        $phpstanConfiguration['parameters']['paths'] = $projectPHPStan['parameters']['paths'] ?? [];
-        $phpstanConfiguration['parameters']['excludePaths'] = $projectPHPStan['parameters']['excludePaths'] ?? [];
-
-        return Neon::encode($phpstanConfiguration, true, '    ');
     }
 }

@@ -4,10 +4,32 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan;
 
+use Nette\Neon\Neon;
+
+/**
+ * @see \TomasVotruba\PHPStanBodyscan\Tests\PHPStanConfigFactory\PHPStanConfigFactoryTest
+ */
 final class PHPStanConfigFactory
 {
-<<<<<<< HEAD
-=======
+    public function create(string $projectDirectory): string
+    {
+        $projectPHPStanFile = $projectDirectory . '/phpstan.neon';
 
->>>>>>> d3adbd2 (misc)
+        // make use of existing phpstan paths if found
+        if (! file_exists($projectPHPStanFile)) {
+            return PHP_EOL;
+        }
+
+        $projectPHPStan = Neon::decodeFile($projectPHPStanFile);
+
+        $configuration = [
+            'parameters' => [
+                'paths' => $projectPHPStan['parameters']['paths'] ?? [],
+                'excludePaths' => $projectPHPStan['parameters']['excludePaths'] ?? [],
+            ],
+        ];
+
+        $encodedNeon = Neon::encode($configuration, true, '    ');
+        return trim($encodedNeon) . PHP_EOL;
+    }
 }

@@ -2,3 +2,5 @@ composer.lock
 /vendor
 
 bodyscan-log.txt
+
+.phpunit.cache
