@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\Command;
 
+use Nette\Neon\Neon;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputArgument;
@@ -68,9 +69,20 @@ final class RunCommand extends Command
 
         // 1. prepare empty phpstan config
         // no baselines, ignores etc. etc :)
+
+        $phpstanConfiguration = [];
+        $projectPHPStanFile = $projectDirectory . '/phpstan.neon';
+
+        // make use of existing phpstan paths if found
+        if (file_exists($projectPHPStanFile)) {
+            $projectPHPStan = Neon::decodeFile($projectPHPStanFile);
+            $phpstanConfiguration['parameters']['paths'] = $projectPHPStan['parameters']['paths'] ?? [];
+            $phpstanConfiguration['parameters']['excludePaths'] = $projectPHPStan['parameters']['excludePaths'] ?? [];
+        }
+
         file_put_contents(
             $projectDirectory . '/phpstan-bodyscan.neon',
-            "parameters:\n    reportUnmatchedIgnoredErrors: false\n" . PHP_EOL
+            Neon::encode($phpstanConfiguration, true, '    ')
         );
 
         // 2. measure phpstan levels

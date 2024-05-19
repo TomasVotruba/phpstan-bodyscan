@@ -8,6 +8,7 @@
     ],
     "require": {
         "php": ">=8.2",
+        "nette/neon": "^3.4",
         "symfony/console": "^6.4",
         "symfony/process": "^7.0",
         "webmozart/assert": "^1.11"
