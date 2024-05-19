@@ -11,25 +11,51 @@ use Nette\Neon\Neon;
  */
 final class PHPStanConfigFactory
 {
+    /**
+     * @var string[]
+     */
+    private const POSSIBLE_SOURCE_PATHS = ['app', 'config', 'lib', 'src', 'tests'];
+
     public function create(string $projectDirectory): string
     {
         $projectPHPStanFile = $projectDirectory . '/phpstan.neon';
 
-        // make use of existing phpstan paths if found
+        $phpstanConfiguration = $this->resolvePHPStanConfiguration($projectPHPStanFile, $projectDirectory);
+
+        $encodedNeon = Neon::encode($phpstanConfiguration, true, '    ');
+        return trim($encodedNeon) . PHP_EOL;
+    }
+
+    /**
+     * @return mixed[]
+     */
+    private function resolvePHPStanConfiguration(string $projectPHPStanFile, string $projectDirectory): array
+    {
         if (! file_exists($projectPHPStanFile)) {
-            return PHP_EOL;
+            $sourcePaths = array_filter(
+                self::POSSIBLE_SOURCE_PATHS,
+                static fn (string $possibleSourcePath): bool => file_exists(
+                    $projectDirectory . '/' . $possibleSourcePath
+                )
+            );
+
+            $sourcePaths = array_values($sourcePaths);
+
+            return [
+                'parameters' => [
+                    'paths' => $sourcePaths,
+                ],
+            ];
         }
 
+        // make use of existing PHPStan paths
         $projectPHPStan = Neon::decodeFile($projectPHPStanFile);
 
-        $configuration = [
+        return [
             'parameters' => [
                 'paths' => $projectPHPStan['parameters']['paths'] ?? [],
                 'excludePaths' => $projectPHPStan['parameters']['excludePaths'] ?? [],
             ],
         ];
-
-        $encodedNeon = Neon::encode($configuration, true, '    ');
-        return trim($encodedNeon) . PHP_EOL;
     }
 }

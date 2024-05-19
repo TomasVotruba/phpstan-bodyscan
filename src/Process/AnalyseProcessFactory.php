@@ -15,26 +15,14 @@ final class AnalyseProcessFactory
     private const TIMEOUT_IN_SECONDS = 400;
 
     /**
-     * @var string[]
-     */
-    private const POSSIBLE_SOURCE_PATHS = ['app', 'src', 'tests'];
-
-    /**
      * @param array<string, mixed> $envVariables
      */
     public function create(string $projectDirectory, int $phpStanLevel, array $envVariables): Process
     {
         $phpStanBinFilePath = $this->resolvePhpStanBinFile($projectDirectory);
 
-        // resolve source paths
-        $sourcePaths = array_filter(
-            self::POSSIBLE_SOURCE_PATHS,
-            static fn (string $possibleSourcePath): bool => file_exists($projectDirectory . '/' . $possibleSourcePath)
-        );
-
         return $this->createAnalyseLevelProcess(
             $phpStanBinFilePath,
-            $sourcePaths,
             $phpStanLevel,
             $projectDirectory,
             $envVariables
@@ -42,12 +30,10 @@ final class AnalyseProcessFactory
     }
 
     /**
-     * @param string[] $sourcePaths
      * @param array<string, mixed> $envVariables
      */
     private function createAnalyseLevelProcess(
         string $phpstanBinFilePath,
-        array $sourcePaths,
         int $phpStanLevel,
         string $projectDirectory,
         array $envVariables
@@ -55,7 +41,6 @@ final class AnalyseProcessFactory
         $command = [
             $phpstanBinFilePath,
             'analyse',
-            ...$sourcePaths,
             '--error-format',
             'json',
             '--level',
@@ -76,8 +61,10 @@ final class AnalyseProcessFactory
 
     private function resolvePhpStanBinFile(string $projectDirectory): string
     {
-        if (file_exists(ComposerLoader::getBinDirectory($projectDirectory) . '/phpstan')) {
-            return ComposerLoader::getBinDirectory($projectDirectory) . '/phpstan';
+        $vendorBinDirectory = ComposerLoader::getBinDirectory($projectDirectory);
+
+        if (file_exists($vendorBinDirectory . '/phpstan')) {
+            return $vendorBinDirectory . '/phpstan';
         }
 
         if (file_exists($projectDirectory . '/vendor/bin/phpstan')) {
