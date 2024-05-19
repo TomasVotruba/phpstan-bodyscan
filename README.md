@@ -6,6 +6,15 @@ Do you want to get quick glimpse of new project code quality?
 
 Get error count for each PHPStan level!
 
+<br>
+
+## How does it work?
+
+First, we look into the project root for `phpstan.neon` file. If found, we reuse its `parameters > paths` configuration. If not, we look for defaults source code paths like `/src`, `/app`,  `/tests`, etc.
+
+Then we run PHPStan for each level from 0 to 8. We count errors and display them in a table.
+
+<br>
 
 ## Install
 
