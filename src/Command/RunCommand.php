@@ -162,7 +162,7 @@ final class RunCommand extends Command
 
     private function ensurePHPStanIsInstalled(string $projectDirectory, string $vendorBinDirectory): void
     {
-        if (! file_exists($vendorBinDirectory . '/phpstan')) {
+        if (! file_exists($projectDirectory . $vendorBinDirectory . '/phpstan')) {
             $this->symfonyStyle->note('PHPStan not found in the project... installing');
             $requirePHPStanProcess = new Process([
                 'composer',
