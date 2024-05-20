@@ -8,6 +8,8 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TomasVotruba\PHPStanBodyscan\Command\RunCommand;
+use TomasVotruba\PHPStanBodyscan\OutputFormatter\JsonOutputFormatter;
+use TomasVotruba\PHPStanBodyscan\OutputFormatter\TableOutputFormatter;
 use TomasVotruba\PHPStanBodyscan\PHPStanConfigFactory;
 use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
 
@@ -21,7 +23,17 @@ if (file_exists(__DIR__ . '/../vendor/scoper-autoload.php')) {
 
 // 1. setup dependencies
 $symfonyStyle = new SymfonyStyle(new ArrayInput([]), new ConsoleOutput());
-$runCommand = new RunCommand($symfonyStyle, new AnalyseProcessFactory(), new PHPStanConfigFactory());
+
+$jsonOutputFormatter = new JsonOutputFormatter($symfonyStyle);
+$tableOutputFormatter = new TableOutputFormatter($symfonyStyle);
+
+$runCommand = new RunCommand(
+    $symfonyStyle,
+    new AnalyseProcessFactory(),
+    new PHPStanConfigFactory(),
+    $jsonOutputFormatter,
+    $tableOutputFormatter
+);
 
 $application = new Application();
 $application->add($runCommand);

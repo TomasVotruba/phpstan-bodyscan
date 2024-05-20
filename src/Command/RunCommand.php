@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TomasVotruba\PHPStanBodyscan\Command;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,19 +13,24 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Exception\AnalysisFailedException;
 use TomasVotruba\PHPStanBodyscan\Logger;
+use TomasVotruba\PHPStanBodyscan\OutputFormatter\JsonOutputFormatter;
+use TomasVotruba\PHPStanBodyscan\OutputFormatter\TableOutputFormatter;
 use TomasVotruba\PHPStanBodyscan\PHPStanConfigFactory;
 use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
 use TomasVotruba\PHPStanBodyscan\Utils\ComposerLoader;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
 use TomasVotruba\PHPStanBodyscan\Utils\JsonLoader;
-use TomasVotruba\PHPStanBodyscan\ValueObject\PHPStanLevelResult;
+use TomasVotruba\PHPStanBodyscan\ValueObject\BodyscanResult;
+use TomasVotruba\PHPStanBodyscan\ValueObject\LevelResult;
 
 final class RunCommand extends Command
 {
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
         private readonly AnalyseProcessFactory $analyseProcessFactory,
-        private readonly PHPStanConfigFactory $phpStanConfigFactory
+        private readonly PHPStanConfigFactory $phpStanConfigFactory,
+        private readonly JsonOutputFormatter $jsonOutputFormatter,
+        private readonly TableOutputFormatter $tableOutputFormatter,
     ) {
         parent::__construct();
     }
@@ -41,6 +45,7 @@ final class RunCommand extends Command
         $this->addOption('max-level', null, InputOption::VALUE_REQUIRED, 'Max PHPStan level to run', 8);
 
         $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
+        $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -48,6 +53,12 @@ final class RunCommand extends Command
         $minPhpStanLevel = (int) $input->getOption('min-level');
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         $projectDirectory = $input->getArgument('directory');
+        $isJson = (bool) $input->getOption('json');
+
+        // silence output till the end to avoid invalid json format
+        if ($isJson) {
+            $this->symfonyStyle->setVerbosity(OutputInterface::VERBOSITY_QUIET);
+        }
 
         $vendorBinDirectory = ComposerLoader::getBinDirectory($projectDirectory);
 
@@ -56,7 +67,7 @@ final class RunCommand extends Command
 
         $envVariables = $this->loadEnvVariables($input);
 
-        $phpStanLevelResults = [];
+        $levelResults = [];
 
         // 1. prepare empty phpstan config
         // no baselines, ignores etc. etc :)
@@ -67,15 +78,21 @@ final class RunCommand extends Command
         for ($phpStanLevel = $minPhpStanLevel; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->section(sprintf('Running PHPStan level %d', $phpStanLevel));
 
-            $phpStanLevelResults[] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables);
+            $levelResults[] = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables);
 
             $this->symfonyStyle->newLine();
         }
 
+        $bodyscanResult = new BodyscanResult($levelResults);
+
         // 3. tidy up temporary config
         unlink($projectDirectory . '/phpstan-bodyscan.neon');
 
-        $this->renderResultInTable($phpStanLevelResults);
+        if ($isJson) {
+            $this->jsonOutputFormatter->outputResult($bodyscanResult);
+        } else {
+            $this->tableOutputFormatter->outputResult($bodyscanResult);
+        }
 
         return self::SUCCESS;
     }
@@ -87,7 +104,7 @@ final class RunCommand extends Command
         int $phpStanLevel,
         string $projectDirectory,
         array $envVariables
-    ): PHPStanLevelResult {
+    ): LevelResult {
         $analyseLevelProcess = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel, $envVariables);
 
         $this->symfonyStyle->writeln('Running: <fg=green>' . $analyseLevelProcess->getCommandLine() . '</>');
@@ -122,31 +139,7 @@ final class RunCommand extends Command
             $fileErrorCount
         ));
 
-        return new PHPStanLevelResult($phpStanLevel, $fileErrorCount);
-    }
-
-    /**
-     * @param PHPStanLevelResult[] $phpStanLevelResults
-     */
-    private function renderResultInTable(array $phpStanLevelResults): void
-    {
-        // convert to symfony table data
-        $tableRows = [];
-        foreach ($phpStanLevelResults as $phpStanLevelResult) {
-            $tableRows[] = [$phpStanLevelResult->getLevel(), $phpStanLevelResult->getErrorCount()];
-        }
-
-        $tableStyle = new TableStyle();
-        $tableStyle->setPadType(STR_PAD_LEFT);
-
-        $this->symfonyStyle->newLine(2);
-
-        $this->symfonyStyle->createTable()
-            ->setHeaders(['Level', 'Error count'])
-            ->setRows($tableRows)
-            // align right
-            ->setStyle($tableStyle)
-            ->render();
+        return new LevelResult($phpStanLevel, $fileErrorCount);
     }
 
     private function ensurePHPStanIsInstalled(string $projectDirectory, string $vendorBinDirectory): void
@@ -161,10 +154,11 @@ final class RunCommand extends Command
             ], $projectDirectory);
 
             $requirePHPStanProcess->mustRun();
-        } else {
-            $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
-            $this->symfonyStyle->newLine(2);
+            return;
         }
+
+        $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
+        $this->symfonyStyle->newLine(2);
     }
 
     /**
