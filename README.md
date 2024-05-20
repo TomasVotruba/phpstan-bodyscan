@@ -53,6 +53,35 @@ To get errors count per level:
 
 <br>
 
+## Do you need a JSON format?
+
+We got you covered:
+
+```bash
+vendor/bin/phpstan-bodyscan --json
+```
+
+↓
+
+```bash
+[
+    {
+        "level": 0,
+        "error_count": 0
+    },
+    {
+        "level": 1,
+        "error_count": 0
+    },
+    {
+        "level": 2,
+        "error_count": 0
+    }
+]
+```
+
+<br>
+
 ### Limit level count
 
 Are you interested only in a few levels? You can limit ranges by the options:

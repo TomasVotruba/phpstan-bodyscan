@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\Command;
 
+use Nette\Utils\Json;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Input\InputArgument;
@@ -41,6 +42,7 @@ final class RunCommand extends Command
         $this->addOption('max-level', null, InputOption::VALUE_REQUIRED, 'Max PHPStan level to run', 8);
 
         $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
+        $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -48,6 +50,12 @@ final class RunCommand extends Command
         $minPhpStanLevel = (int) $input->getOption('min-level');
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         $projectDirectory = $input->getArgument('directory');
+        $isJson = (bool) $input->getOption('json');
+
+        // silence output till the end to avoid invalid json format
+        if ($isJson) {
+            $this->symfonyStyle->setVerbosity(OutputInterface::VERBOSITY_QUIET);
+        }
 
         $vendorBinDirectory = ComposerLoader::getBinDirectory($projectDirectory);
 
@@ -75,7 +83,24 @@ final class RunCommand extends Command
         // 3. tidy up temporary config
         unlink($projectDirectory . '/phpstan-bodyscan.neon');
 
-        $this->renderResultInTable($phpStanLevelResults);
+        if ($isJson) {
+            // restore verbosity
+            $this->symfonyStyle->setVerbosity(OutputInterface::VERBOSITY_NORMAL);
+
+            $rawData = [];
+            /** @var PHPStanLevelResult[] $phpStanLevelResults */
+            foreach ($phpStanLevelResults as $phpStanLevelResult) {
+                $rawData[] = [
+                    'level' => $phpStanLevelResult->getLevel(),
+                    'error_count' => $phpStanLevelResult->getErrorCount(),
+                ];
+            }
+
+            $jsonOutput = json_encode($rawData, JSON_PRETTY_PRINT);
+            $this->symfonyStyle->writeln($jsonOutput);
+        } else {
+            $this->renderResultInTable($phpStanLevelResults);
+        }
 
         return self::SUCCESS;
     }
@@ -161,10 +186,11 @@ final class RunCommand extends Command
             ], $projectDirectory);
 
             $requirePHPStanProcess->mustRun();
-        } else {
-            $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
-            $this->symfonyStyle->newLine(2);
+            return;
         }
+
+        $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
+        $this->symfonyStyle->newLine(2);
     }
 
     /**
