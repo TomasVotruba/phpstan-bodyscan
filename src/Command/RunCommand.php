@@ -54,18 +54,7 @@ final class RunCommand extends Command
         // 1. is phpstan installed in the project?
         $this->ensurePHPStanIsInstalled($projectDirectory, $vendorBinDirectory);
 
-        $envFile = $input->getOption('env-file');
-        $envVariables = [];
-        if (is_string($envFile)) {
-            $envVariables = FileLoader::resolveEnvVariablesFromFile($envFile);
-            $this->symfonyStyle->note(sprintf('Adding envs from "%s" file:', $envFile));
-
-            foreach ($envVariables as $name => $value) {
-                $this->symfonyStyle->writeln(' * ' . $name . ': ' . $value);
-            }
-
-            $this->symfonyStyle->newLine();
-        }
+        $envVariables = $this->loadEnvVariables($input);
 
         $phpStanLevelResults = [];
 
@@ -176,5 +165,27 @@ final class RunCommand extends Command
             $this->symfonyStyle->note('PHPStan found in the project, lets run it!');
             $this->symfonyStyle->newLine(2);
         }
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function loadEnvVariables(InputInterface $input): array
+    {
+        $envFile = $input->getOption('env-file');
+        if (! is_string($envFile)) {
+            return [];
+        }
+
+        $envVariables = FileLoader::resolveEnvVariablesFromFile($envFile);
+        $this->symfonyStyle->note(sprintf('Adding envs from "%s" file:', $envFile));
+
+        foreach ($envVariables as $name => $value) {
+            $this->symfonyStyle->writeln(' * ' . $name . ': ' . $value);
+        }
+
+        $this->symfonyStyle->newLine();
+
+        return $envVariables;
     }
 }
