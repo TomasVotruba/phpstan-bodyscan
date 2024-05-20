@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\ValueObject;
 
-final readonly class PHPStanLevelResult
+final readonly class LevelResult
 {
     public function __construct(
         private int $level,

@@ -71,11 +71,11 @@ vendor/bin/phpstan-bodyscan --json
     },
     {
         "level": 1,
-        "error_count": 0
+        "error_count": 5
     },
     {
         "level": 2,
-        "error_count": 0
+        "error_count": 25
     }
 ]
 ```
