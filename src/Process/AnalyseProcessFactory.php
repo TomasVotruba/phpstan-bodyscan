@@ -43,6 +43,9 @@ final class AnalyseProcessFactory
             'analyse',
             '--error-format',
             'json',
+            // increase default memory limit to allow analyse huge projects
+            '--memory-limit',
+            '16G',
             '--level',
             $phpStanLevel,
             '--configuration',
