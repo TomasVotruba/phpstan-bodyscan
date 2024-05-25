@@ -16,11 +16,16 @@ final class PHPStanConfigFactory
      */
     private const POSSIBLE_SOURCE_PATHS = ['app', 'config', 'lib', 'src', 'tests'];
 
-    public function create(string $projectDirectory): string
+    /**
+     * @param array<string, mixed[]> $extraConfiguration
+     */
+    public function create(string $projectDirectory, array $extraConfiguration = []): string
     {
         $projectPHPStanFile = $projectDirectory . '/phpstan.neon';
 
         $phpstanConfiguration = $this->resolvePHPStanConfiguration($projectPHPStanFile, $projectDirectory);
+
+        $phpstanConfiguration = array_merge_recursive($phpstanConfiguration, $extraConfiguration);
 
         $encodedNeon = Neon::encode($phpstanConfiguration, true, '    ');
         return trim($encodedNeon) . PHP_EOL;
@@ -51,11 +56,10 @@ final class PHPStanConfigFactory
         // make use of existing PHPStan paths
         $projectPHPStan = Neon::decodeFile($projectPHPStanFile);
 
-        return [
-            'parameters' => [
-                'paths' => $projectPHPStan['parameters']['paths'] ?? [],
-                'excludePaths' => $projectPHPStan['parameters']['excludePaths'] ?? [],
-            ],
-        ];
+        $parameters = [];
+        $parameters['parameters']['paths'] = $projectPHPStan['parameters']['paths'] ?? [];
+        $parameters['parameters']['excludePaths'] = $projectPHPStan['parameters']['excludePaths'] ?? [];
+
+        return $parameters;
     }
 }

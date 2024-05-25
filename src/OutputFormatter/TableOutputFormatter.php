@@ -32,6 +32,31 @@ final readonly class TableOutputFormatter implements OutputFormatterInterface
             // align right
             ->setStyle($tableStyle)
             ->render();
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> feda13b (misc)
+
+        if ($bodyscanResult->getTypeCoverageResults()) {
+            $this->symfonyStyle->title('Type coverage');
+
+<<<<<<< HEAD
+            foreach ($bodyscanResult->getTypeCoverageResults() as $typeCoverageResult) {
+                $this->symfonyStyle->writeln(sprintf(
+                    '%s coverage is %f.2, out of %d items total',
+                    $typeCoverageResult->getCategory(),
+                    $typeCoverageResult->getRelative(),
+                    $typeCoverageResult->getTotalCount(),
+                ));
+            }
+        }
+>>>>>>> 5de6845 (fixup! misc)
+=======
+            foreach ($bodyscanResult->getTypeCoverageResults() as $typeCoverageItem) {
+            }
+        }
+>>>>>>> feda13b (misc)
     }
 
     /**

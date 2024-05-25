@@ -15,37 +15,25 @@ final class AnalyseProcessFactory
     private const TIMEOUT_IN_SECONDS = 400;
 
     /**
+     * @var string
+     */
+    private const MEMORY_LIMIT = '16G';
+
+    /**
      * @param array<string, mixed> $envVariables
      */
     public function create(string $projectDirectory, int $phpStanLevel, array $envVariables): Process
     {
         $phpStanBinFilePath = $this->resolvePhpStanBinFile($projectDirectory);
 
-        return $this->createAnalyseLevelProcess(
-            $phpStanBinFilePath,
-            $phpStanLevel,
-            $projectDirectory,
-            $envVariables
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $envVariables
-     */
-    private function createAnalyseLevelProcess(
-        string $phpstanBinFilePath,
-        int $phpStanLevel,
-        string $projectDirectory,
-        array $envVariables
-    ): Process {
         $command = [
-            $phpstanBinFilePath,
+            $phpStanBinFilePath,
             'analyse',
             '--error-format',
             'json',
             // increase default memory limit to allow analyse huge projects
             '--memory-limit',
-            '16G',
+            self::MEMORY_LIMIT,
             '--level',
             $phpStanLevel,
             '--configuration',
@@ -56,6 +44,32 @@ final class AnalyseProcessFactory
             $command,
             $projectDirectory,
             $envVariables,
+            null,
+            // timeout in seconds
+            self::TIMEOUT_IN_SECONDS,
+        );
+    }
+
+    public function createTypeCoverageProcess(string $projectDirectory): Process
+    {
+        $phpStanBinFilePath = $this->resolvePhpStanBinFile($projectDirectory);
+
+        $command = [
+            $phpStanBinFilePath,
+            'analyse',
+            '--error-format',
+            'json',
+            // increase default memory limit to allow analyse huge projects
+            '--memory-limit',
+            self::MEMORY_LIMIT,
+            '--configuration',
+            'phpstan-bodyscan.neon',
+        ];
+
+        return new Process(
+            $command,
+            $projectDirectory,
+            null,
             null,
             // timeout in seconds
             self::TIMEOUT_IN_SECONDS,

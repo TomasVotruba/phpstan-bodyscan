@@ -92,6 +92,15 @@ vendor/bin/phpstan-bodyscan run --min-level 0 --max-level 3
 
 <br>
 
+
+### Measure type coverage
+
+*Experimental!*
+
+
+
+<br>
+
 ### Load env file
 
 Some projects need to load `.env` file to run PHPStan. You can do it like this:
