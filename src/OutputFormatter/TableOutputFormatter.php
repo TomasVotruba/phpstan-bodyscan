@@ -8,6 +8,7 @@ use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TomasVotruba\PHPStanBodyscan\Contract\OutputFormatterInterface;
 use TomasVotruba\PHPStanBodyscan\ValueObject\BodyscanResult;
+use TomasVotruba\PHPStanBodyscan\ValueObject\TypeCoverageResult;
 
 final readonly class TableOutputFormatter implements OutputFormatterInterface
 {
@@ -32,6 +33,22 @@ final readonly class TableOutputFormatter implements OutputFormatterInterface
             // align right
             ->setStyle($tableStyle)
             ->render();
+    }
+
+    public function outputTypeCoverageResult(TypeCoverageResult $typeCoverageResult): void
+    {
+        $this->symfonyStyle->title('Type Coverage results');
+
+        foreach ($typeCoverageResult->getTypeCoverages() as $typeCoverage) {
+            $this->symfonyStyle->writeln(sprintf(
+                '%s coverage is %.1f %%, out of %d items total',
+                ucfirst($typeCoverage->getCategory()),
+                $typeCoverage->getRelative(),
+                $typeCoverage->getTotalCount(),
+            ));
+        }
+
+        $this->symfonyStyle->newLine();
     }
 
     /**

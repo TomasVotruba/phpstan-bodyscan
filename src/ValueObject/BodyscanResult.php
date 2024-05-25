@@ -10,7 +10,7 @@ final readonly class BodyscanResult
      * @param LevelResult[] $levelResults
      */
     public function __construct(
-        private array $levelResults,
+        private array $levelResults
     ) {
     }
 

@@ -4,14 +4,8 @@ declare(strict_types=1);
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use TomasVotruba\PHPStanBodyscan\Command\RunCommand;
-use TomasVotruba\PHPStanBodyscan\OutputFormatter\JsonOutputFormatter;
-use TomasVotruba\PHPStanBodyscan\OutputFormatter\TableOutputFormatter;
-use TomasVotruba\PHPStanBodyscan\PHPStanConfigFactory;
-use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
+use TomasVotruba\PHPStanBodyscan\DependencyInjection\ContainerFactory;
 
 if (file_exists(__DIR__ . '/../vendor/scoper-autoload.php')) {
     // A. build downgraded package
@@ -21,32 +15,10 @@ if (file_exists(__DIR__ . '/../vendor/scoper-autoload.php')) {
     require_once __DIR__ . '/../vendor/autoload.php';
 }
 
-// 1. setup dependencies
-$symfonyStyle = new SymfonyStyle(new ArrayInput([]), new ConsoleOutput());
+$ontainerFactory = new ContainerFactory();
+$container = $ontainerFactory->create();
 
-$jsonOutputFormatter = new JsonOutputFormatter($symfonyStyle);
-$tableOutputFormatter = new TableOutputFormatter($symfonyStyle);
-
-$runCommand = new RunCommand(
-    $symfonyStyle,
-    new AnalyseProcessFactory(),
-    new PHPStanConfigFactory(),
-    $jsonOutputFormatter,
-    $tableOutputFormatter
-);
-
-$application = new Application();
-$application->add($runCommand);
-$application->setDefaultCommand('run');
-
-// 2. hide default commands
-$application->get('completion')
-    ->setHidden();
-$application->get('help')
-    ->setHidden();
-$application->get('list')
-    ->setHidden();
-
-// 3. execute command
+/** @var Application $application */
+$application = $container->get(Application::class);
 $exitCode = $application->run(new ArgvInput(), new ConsoleOutput());
 exit($exitCode);

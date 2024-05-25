@@ -15,66 +15,50 @@ final class AnalyseProcessFactory
     private const TIMEOUT_IN_SECONDS = 400;
 
     /**
-     * @param array<string, mixed> $envVariables
+     * @var string
      */
-    public function create(string $projectDirectory, int $phpStanLevel, array $envVariables): Process
-    {
-        $phpStanBinFilePath = $this->resolvePhpStanBinFile($projectDirectory);
-
-        return $this->createAnalyseLevelProcess(
-            $phpStanBinFilePath,
-            $phpStanLevel,
-            $projectDirectory,
-            $envVariables
-        );
-    }
+    private const MEMORY_LIMIT = '16G';
 
     /**
      * @param array<string, mixed> $envVariables
      */
-    private function createAnalyseLevelProcess(
-        string $phpstanBinFilePath,
-        int $phpStanLevel,
-        string $projectDirectory,
-        array $envVariables
-    ): Process {
+    public function create(string $projectDirectory, int $phpStanLevel, array $envVariables): Process
+    {
+        $phpStanBinFilePath = ComposerLoader::getPHPStanBinFile($projectDirectory);
+
         $command = [
-            $phpstanBinFilePath,
+            $phpStanBinFilePath,
             'analyse',
             '--error-format',
             'json',
             // increase default memory limit to allow analyse huge projects
             '--memory-limit',
-            '16G',
+            self::MEMORY_LIMIT,
             '--level',
             $phpStanLevel,
             '--configuration',
             'phpstan-bodyscan.neon',
         ];
 
-        return new Process(
-            $command,
-            $projectDirectory,
-            $envVariables,
-            null,
-            // timeout in seconds
-            self::TIMEOUT_IN_SECONDS,
-        );
+        return new Process($command, $projectDirectory, $envVariables, null, self::TIMEOUT_IN_SECONDS);
     }
 
-    private function resolvePhpStanBinFile(string $projectDirectory): string
+    public function createTypeCoverageProcess(string $projectDirectory): Process
     {
-        $vendorBinDirectory = ComposerLoader::getBinDirectory($projectDirectory);
+        $phpStanBinFilePath = ComposerLoader::getPHPStanBinFile($projectDirectory);
 
-        if (file_exists($vendorBinDirectory . '/phpstan')) {
-            return $vendorBinDirectory . '/phpstan';
-        }
+        $command = [
+            $phpStanBinFilePath,
+            'analyse',
+            '--error-format',
+            'json',
+            // increase default memory limit to allow analyse huge projects
+            '--memory-limit',
+            self::MEMORY_LIMIT,
+            '--configuration',
+            'phpstan-bodyscan.neon',
+        ];
 
-        if (file_exists($projectDirectory . '/vendor/bin/phpstan')) {
-            return 'vendor/bin/phpstan';
-        }
-
-        // possible that /bin directory is used
-        return 'bin/phpstan';
+        return new Process($command, $projectDirectory, null, null, self::TIMEOUT_IN_SECONDS);
     }
 }

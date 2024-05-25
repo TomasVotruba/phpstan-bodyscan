@@ -8,6 +8,7 @@
     ],
     "require": {
         "php": ">=8.2",
+        "illuminate/container": "^11.8",
         "nette/neon": "^3.4",
         "symfony/console": "^6.4",
         "symfony/process": "^7.0",
