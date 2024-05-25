@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace TomasVotruba\PHPStanBodyscan\Command;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TomasVotruba\PHPStanBodyscan\DependencyInstaller;
 use TomasVotruba\PHPStanBodyscan\Logger;
 use TomasVotruba\PHPStanBodyscan\OutputFormatter\JsonOutputFormatter;
 use TomasVotruba\PHPStanBodyscan\OutputFormatter\TableOutputFormatter;
@@ -29,7 +27,6 @@ final class RunCommand extends Command
         private readonly PHPStanConfigFactory $phpStanConfigFactory,
         private readonly JsonOutputFormatter $jsonOutputFormatter,
         private readonly TableOutputFormatter $tableOutputFormatter,
-        private readonly DependencyInstaller $dependencyInstaller,
         private readonly PHPStanResultResolver $phpStanResultResolver
     ) {
         parent::__construct();
@@ -41,7 +38,6 @@ final class RunCommand extends Command
         $this->setAliases(['scan', 'analyse']);
         $this->setDescription('Check classes that are not used in any config and in the code');
 
-        $this->addArgument('directory', InputArgument::OPTIONAL, 'Directory to scan', getcwd());
         $this->addOption('min-level', null, InputOption::VALUE_REQUIRED, 'Min PHPStan level to run', 0);
         $this->addOption('max-level', null, InputOption::VALUE_REQUIRED, 'Max PHPStan level to run', 8);
 
@@ -51,7 +47,8 @@ final class RunCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $projectDirectory = $input->getArgument('directory');
+        /** @var string $projectDirectory */
+        $projectDirectory = getcwd();
 
         $minPhpStanLevel = (int) $input->getOption('min-level');
         $maxPhpStanLevel = (int) $input->getOption('max-level');
@@ -61,9 +58,6 @@ final class RunCommand extends Command
         if ($isJson) {
             $this->symfonyStyle->setVerbosity(OutputInterface::VERBOSITY_QUIET);
         }
-
-        // 1. is phpstan installed in the project?
-        $this->dependencyInstaller->ensurePHPStanIsInstalled($projectDirectory);
 
         $envVariables = $this->loadEnvVariables($input);
 
@@ -108,12 +102,10 @@ final class RunCommand extends Command
         string $projectDirectory,
         array $envVariables
     ): LevelResult {
-        $analyseLevelProcess = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel, $envVariables);
+        $process = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel, $envVariables);
+        $process->run();
 
-        // $this->symfonyStyle->writeln('Running: <fg=green>' . $analyseLevelProcess->getCommandLine() . '</>');
-        $analyseLevelProcess->run();
-
-        $result = $this->phpStanResultResolver->resolve($analyseLevelProcess);
+        $result = $this->phpStanResultResolver->resolve($process);
         $fileErrorCount = (int) $result['totals']['file_errors'];
 
         Logger::log(sprintf(

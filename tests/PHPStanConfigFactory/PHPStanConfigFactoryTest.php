@@ -30,6 +30,5 @@ final class PHPStanConfigFactoryTest extends TestCase
     {
         yield [__DIR__ . '/Fixture/some-project', __DIR__ . '/Fixture/expected-some-project-phpstan.neon'];
         yield [__DIR__ . '/Fixture/empty-project', __DIR__ . '/Fixture/expected-empty-project-phpstan.neon'];
-
     }
 }

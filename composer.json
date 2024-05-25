@@ -10,7 +10,6 @@
         "php": ">=8.2",
         "illuminate/container": "^11.8",
         "nette/neon": "^3.4",
-        "phpstan/phpstan": "^1.11",
         "symfony/console": "^6.4",
         "symfony/process": "^7.0",
         "webmozart/assert": "^1.11"

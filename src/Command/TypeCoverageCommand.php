@@ -6,7 +6,6 @@ namespace TomasVotruba\PHPStanBodyscan\Command;
 
 use Nette\Utils\Strings;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,7 +18,6 @@ use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
 use TomasVotruba\PHPStanBodyscan\Process\PHPStanResultResolver;
 use TomasVotruba\PHPStanBodyscan\ValueObject\TypeCoverage;
 use TomasVotruba\PHPStanBodyscan\ValueObject\TypeCoverageResult;
-use Webmozart\Assert\Assert;
 
 final class TypeCoverageCommand extends Command
 {
@@ -43,12 +41,8 @@ final class TypeCoverageCommand extends Command
 
     protected function configure(): void
     {
-        // @todo add laralve cotnainerin
-
         $this->setName('type-coverage');
         $this->setDescription('Check classes that are not used in any config and in the code');
-
-        $this->addArgument('directory', InputArgument::OPTIONAL, 'Directory to scan', getcwd());
 
         $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
         $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
@@ -56,18 +50,14 @@ final class TypeCoverageCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $projectDirectory = $input->getArgument('directory');
-        Assert::directory($projectDirectory);
-
+        /** @var string $projectDirectory */
+        $projectDirectory = getcwd();
         $isJson = (bool) $input->getOption('json');
 
         // silence output till the end to avoid invalid json format
         if ($isJson) {
             $this->symfonyStyle->setVerbosity(OutputInterface::VERBOSITY_QUIET);
         }
-
-        // 1. is phpstan installed in the project?
-        $this->dependencyInstaller->ensurePHPStanIsInstalled($projectDirectory);
 
         $typeCoverageResult = $this->measureTypeCoverage($projectDirectory);
 
@@ -119,7 +109,7 @@ final class TypeCoverageCommand extends Command
                 }
 
                 $typeCoverageResults[] = new TypeCoverage(
-                    lcfirst($match['category']),
+                    lcfirst((string) $match['category']),
                     (float) $match['relative'],
                     (int) $match['total_count'],
                 );

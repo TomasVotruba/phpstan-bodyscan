@@ -24,7 +24,6 @@ final class PHPStanConfigFactory
         $projectPHPStanFile = $projectDirectory . '/phpstan.neon';
 
         $phpstanConfiguration = $this->resolvePHPStanConfiguration($projectPHPStanFile, $projectDirectory);
-
         $phpstanConfiguration = array_merge_recursive($phpstanConfiguration, $extraConfiguration);
 
         $encodedNeon = Neon::encode($phpstanConfiguration, true, '    ');
@@ -56,10 +55,11 @@ final class PHPStanConfigFactory
         // make use of existing PHPStan paths
         $projectPHPStan = Neon::decodeFile($projectPHPStanFile);
 
-        $parameters = [];
-        $parameters['parameters']['paths'] = $projectPHPStan['parameters']['paths'] ?? [];
-        $parameters['parameters']['excludePaths'] = $projectPHPStan['parameters']['excludePaths'] ?? [];
-
-        return $parameters;
+        return [
+            'parameters' => [
+                'paths' => $projectPHPStan['parameters']['paths'] ?? [],
+                'excludePaths' => $projectPHPStan['parameters']['excludePaths'] ?? [],
+            ],
+        ];
     }
 }

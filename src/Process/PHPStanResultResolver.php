@@ -24,11 +24,10 @@ final class PHPStanResultResolver
             $this->failForFatalErrors($jsonResult, $process, (int) $json['totals']['errors']);
         }
 
-        $jsonResult = $process->getOutput();
-        return JsonLoader::loadToArray($jsonResult, $process);
+        return $json;
     }
 
-    private function failForFatalErrors(string $jsonResult, Process $analyseLevelProcess, int $fatalErrorCount): void
+    private function failForFatalErrors(string $jsonResult, Process $analyseLevelProcess, int $fatalErrorCount): never
     {
         $loggedOutput = $jsonResult ?: $analyseLevelProcess->getErrorOutput();
 

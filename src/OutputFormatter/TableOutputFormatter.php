@@ -37,16 +37,18 @@ final readonly class TableOutputFormatter implements OutputFormatterInterface
 
     public function outputTypeCoverageResult(TypeCoverageResult $typeCoverageResult): void
     {
-        $this->symfonyStyle->title('Type coverage');
+        $this->symfonyStyle->title('Type Coverage results');
 
         foreach ($typeCoverageResult->getTypeCoverages() as $typeCoverage) {
             $this->symfonyStyle->writeln(sprintf(
-                '%s coverage is %f.2, out of %d items total',
-                $typeCoverage->getCategory(),
+                '%s coverage is %.1f %%, out of %d items total',
+                ucfirst($typeCoverage->getCategory()),
                 $typeCoverage->getRelative(),
                 $typeCoverage->getTotalCount(),
             ));
         }
+
+        $this->symfonyStyle->newLine();
     }
 
     /**

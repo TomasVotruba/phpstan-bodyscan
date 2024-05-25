@@ -19,10 +19,10 @@ final readonly class JsonOutputFormatter implements OutputFormatterInterface
 
     public function outputTypeCoverageResult(TypeCoverageResult $typeCoverageResult): void
     {
-        $rawData['type_coverage'] = [];
+        $rawData = [];
 
         foreach ($typeCoverageResult->getTypeCoverages() as $typeCoverageResult) {
-            $rawData['type_coverage'][] = [
+            $rawData[] = [
                 'category' => $typeCoverageResult->getCategory(),
                 'relative_covered' => $typeCoverageResult->getRelative(),
                 'total_count' => $typeCoverageResult->getTotalCount(),
@@ -37,12 +37,10 @@ final readonly class JsonOutputFormatter implements OutputFormatterInterface
         // restore verbosity
         $this->symfonyStyle->setVerbosity(OutputInterface::VERBOSITY_NORMAL);
 
-        $rawData = [
-            'levels' => [],
-        ];
+        $rawData = [];
 
         foreach ($bodyscanResult->getLevelResults() as $levelResult) {
-            $rawData['levels'][] = [
+            $rawData[] = [
                 'level' => $levelResult->getLevel(),
                 'error_count' => $levelResult->getErrorCount(),
             ];

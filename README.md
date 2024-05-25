@@ -24,7 +24,7 @@ composer require tomasvotruba/phpstan-bodyscan --dev
 
 ## Usage
 
-Run tool in your project. It will take some time, as it will run PHPStan for each level.
+Run tool in your project. It will take some time, as it will run full PHPStan analysis for each level.
 
 
 ```bash
@@ -64,22 +64,20 @@ vendor/bin/phpstan-bodyscan --json
 ↓
 
 ```bash
-{
-    "levels": [
-        {
-            "level": 0,
-            "error_count": 0
-        },
-        {
-            "level": 1,
-            "error_count": 5
-        },
-        {
-            "level": 2,
-            "error_count": 25
-        }
-    ]
-}
+[
+    {
+        "level": 0,
+        "error_count": 0
+    },
+    {
+        "level": 1,
+        "error_count": 5
+    },
+    {
+        "level": 2,
+        "error_count": 25
+    }
+]
 ```
 
 <br>
@@ -99,39 +97,37 @@ vendor/bin/phpstan-bodyscan run --min-level 0 --max-level 3
 
 *Experimental!*
 
-Are you interested in learning param, return and proeprty type declaration coverage of the project?
+Are you interested in learning param, return and property type declaration coverage of the project?
 
 Run `type-coverage` command ↓
 
 ```bash
-vendor/bin/phpstan-bodyscan type-coverage
+vendor/bin/phpstan-bodyscan type-coverage --json
 ```
 
 ```php
-{
-    "type_coverage": [
-        {
-            "category": "param type",
-            "relative_covered": 100,
-            "total_count": 54
-        },
-        {
-            "category": "property type",
-            "relative_covered": 100,
-            "total_count": 1
-        },
-        {
-            "category": "return type",
-            "relative_covered": 100,
-            "total_count": 33
-        },
-        {
-            "category": "strict declares",
-            "relative_covered": 100,
-            "total_count": 18
-        }
-    ]
-}
+[
+    {
+        "category": "param type",
+        "relative_covered": 100,
+        "total_count": 54
+    },
+    {
+        "category": "property type",
+        "relative_covered": 100,
+        "total_count": 1
+    },
+    {
+        "category": "return type",
+        "relative_covered": 100,
+        "total_count": 33
+    },
+    {
+        "category": "strict declares",
+        "relative_covered": 100,
+        "total_count": 18
+    }
+]
 ```
 
 Based on [type-coverage package](https://github.com/TomasVotruba/type-coverage).
