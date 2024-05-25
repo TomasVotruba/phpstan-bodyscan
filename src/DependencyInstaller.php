@@ -6,6 +6,7 @@ namespace TomasVotruba\PHPStanBodyscan;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
+use TomasVotruba\PHPStanBodyscan\Utils\ComposerLoader;
 
 final class DependencyInstaller
 {
@@ -14,18 +15,14 @@ final class DependencyInstaller
     ) {
     }
 
-    public function ensurePHPStanIsInstalled(string $projectDirectory, string $vendorBinDirectory): void
+    public function ensurePHPStanIsInstalled(string $projectDirectory): void
     {
-        if (! file_exists($projectDirectory . $vendorBinDirectory . '/phpstan')) {
+        if (! file_exists($projectDirectory . '/' . ComposerLoader::getPHPStanBinFile($projectDirectory))) {
             $this->symfonyStyle->note('PHPStan not found in the project... installing');
-            $requirePHPStanProcess = new Process([
-                'composer',
-                'require',
-                'phpstan/phpstan',
-                '--dev',
-            ], $projectDirectory);
 
-            $requirePHPStanProcess->mustRun();
+            $process = new Process(['composer', 'require', 'phpstan/phpstan', '--dev'], $projectDirectory);
+            $process->mustRun();
+
             return;
         }
 
@@ -41,8 +38,6 @@ final class DependencyInstaller
             return;
         }
 
-        $this->symfonyStyle->note('Type coverage not found in the project... installing');
-
         $requirePHPStanProcess = new Process([
             'composer',
             'require',
@@ -51,5 +46,7 @@ final class DependencyInstaller
         ], $projectDirectory);
 
         $requirePHPStanProcess->mustRun();
+
+        // @todo cleanup after run
     }
 }

@@ -24,7 +24,7 @@ final class AnalyseProcessFactory
      */
     public function create(string $projectDirectory, int $phpStanLevel, array $envVariables): Process
     {
-        $phpStanBinFilePath = $this->resolvePhpStanBinFile($projectDirectory);
+        $phpStanBinFilePath = ComposerLoader::getPHPStanBinFile($projectDirectory);
 
         $command = [
             $phpStanBinFilePath,
@@ -40,19 +40,12 @@ final class AnalyseProcessFactory
             'phpstan-bodyscan.neon',
         ];
 
-        return new Process(
-            $command,
-            $projectDirectory,
-            $envVariables,
-            null,
-            // timeout in seconds
-            self::TIMEOUT_IN_SECONDS,
-        );
+        return new Process($command, $projectDirectory, $envVariables, null, self::TIMEOUT_IN_SECONDS);
     }
 
     public function createTypeCoverageProcess(string $projectDirectory): Process
     {
-        $phpStanBinFilePath = $this->resolvePhpStanBinFile($projectDirectory);
+        $phpStanBinFilePath = ComposerLoader::getPHPStanBinFile($projectDirectory);
 
         $command = [
             $phpStanBinFilePath,
@@ -66,29 +59,6 @@ final class AnalyseProcessFactory
             'phpstan-bodyscan.neon',
         ];
 
-        return new Process(
-            $command,
-            $projectDirectory,
-            null,
-            null,
-            // timeout in seconds
-            self::TIMEOUT_IN_SECONDS,
-        );
-    }
-
-    private function resolvePhpStanBinFile(string $projectDirectory): string
-    {
-        $vendorBinDirectory = ComposerLoader::getBinDirectory($projectDirectory);
-
-        if (file_exists($vendorBinDirectory . '/phpstan')) {
-            return $vendorBinDirectory . '/phpstan';
-        }
-
-        if (file_exists($projectDirectory . '/vendor/bin/phpstan')) {
-            return 'vendor/bin/phpstan';
-        }
-
-        // possible that /bin directory is used
-        return 'bin/phpstan';
+        return new Process($command, $projectDirectory, null, null, self::TIMEOUT_IN_SECONDS);
     }
 }

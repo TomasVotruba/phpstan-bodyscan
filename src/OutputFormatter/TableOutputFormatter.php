@@ -8,6 +8,7 @@ use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TomasVotruba\PHPStanBodyscan\Contract\OutputFormatterInterface;
 use TomasVotruba\PHPStanBodyscan\ValueObject\BodyscanResult;
+use TomasVotruba\PHPStanBodyscan\ValueObject\TypeCoverageResult;
 
 final readonly class TableOutputFormatter implements OutputFormatterInterface
 {
@@ -32,31 +33,20 @@ final readonly class TableOutputFormatter implements OutputFormatterInterface
             // align right
             ->setStyle($tableStyle)
             ->render();
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> feda13b (misc)
+    }
 
-        if ($bodyscanResult->getTypeCoverageResults()) {
-            $this->symfonyStyle->title('Type coverage');
+    public function outputTypeCoverageResult(TypeCoverageResult $typeCoverageResult): void
+    {
+        $this->symfonyStyle->title('Type coverage');
 
-<<<<<<< HEAD
-            foreach ($bodyscanResult->getTypeCoverageResults() as $typeCoverageResult) {
-                $this->symfonyStyle->writeln(sprintf(
-                    '%s coverage is %f.2, out of %d items total',
-                    $typeCoverageResult->getCategory(),
-                    $typeCoverageResult->getRelative(),
-                    $typeCoverageResult->getTotalCount(),
-                ));
-            }
+        foreach ($typeCoverageResult->getTypeCoverages() as $typeCoverage) {
+            $this->symfonyStyle->writeln(sprintf(
+                '%s coverage is %f.2, out of %d items total',
+                $typeCoverage->getCategory(),
+                $typeCoverage->getRelative(),
+                $typeCoverage->getTotalCount(),
+            ));
         }
->>>>>>> 5de6845 (fixup! misc)
-=======
-            foreach ($bodyscanResult->getTypeCoverageResults() as $typeCoverageItem) {
-            }
-        }
->>>>>>> feda13b (misc)
     }
 
     /**
