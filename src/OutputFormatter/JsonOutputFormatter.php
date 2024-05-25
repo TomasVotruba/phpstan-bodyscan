@@ -42,18 +42,6 @@ final readonly class JsonOutputFormatter implements OutputFormatterInterface
             ];
         }
 
-        if ($bodyscanResult->getTypeCoverageResults()) {
-            $rawData['type_coverage'] = [];
-
-            foreach ($bodyscanResult->getTypeCoverageResults() as $typeCoverageResult) {
-                $rawData['type_coverage'][] = [
-                    'category' => $typeCoverageResult->getCategory(),
-                    'relative_covered' => $typeCoverageResult->getRelative(),
-                    'total_count' => $typeCoverageResult->getTotalCount(),
-                ];
-            }
-        }
-
         return $rawData;
     }
 }

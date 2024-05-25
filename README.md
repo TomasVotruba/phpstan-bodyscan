@@ -64,20 +64,22 @@ vendor/bin/phpstan-bodyscan --json
 ↓
 
 ```bash
-[
-    {
-        "level": 0,
-        "error_count": 0
-    },
-    {
-        "level": 1,
-        "error_count": 5
-    },
-    {
-        "level": 2,
-        "error_count": 25
-    }
-]
+{
+    "levels": [
+        {
+            "level": 0,
+            "error_count": 0
+        },
+        {
+            "level": 1,
+            "error_count": 5
+        },
+        {
+            "level": 2,
+            "error_count": 25
+        }
+    ]
+}
 ```
 
 <br>
@@ -97,7 +99,42 @@ vendor/bin/phpstan-bodyscan run --min-level 0 --max-level 3
 
 *Experimental!*
 
+Are you interested in learning param, return and proeprty type declaration coverage of the project?
 
+Run `type-coverage` command ↓
+
+```bash
+vendor/bin/phpstan-bodyscan type-coverage
+```
+
+```php
+{
+    "type_coverage": [
+        {
+            "category": "param type",
+            "relative_covered": 100,
+            "total_count": 54
+        },
+        {
+            "category": "property type",
+            "relative_covered": 100,
+            "total_count": 1
+        },
+        {
+            "category": "return type",
+            "relative_covered": 100,
+            "total_count": 33
+        },
+        {
+            "category": "strict declares",
+            "relative_covered": 100,
+            "total_count": 18
+        }
+    ]
+}
+```
+
+Based on [type-coverage package](https://github.com/TomasVotruba/type-coverage).
 
 <br>
 
@@ -108,6 +145,7 @@ Some projects need to load `.env` file to run PHPStan. You can do it like this:
 ```bash
 vendor/bin/phpstan-bodyscan run --env-file some-parameters.env
 ```
+
 
 <br>
 
