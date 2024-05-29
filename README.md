@@ -108,6 +108,8 @@ Run `type-coverage` command ↓
 vendor/bin/phpstan-bodyscan type-coverage --json
 ```
 
+↓
+
 ```php
 [
     {
