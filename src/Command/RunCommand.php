@@ -99,7 +99,7 @@ final class RunCommand extends Command
             $levelResult = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables);
             $levelResults[] = $levelResult;
 
-            $this->symfonyStyle->writeln(sprintf('<info>Found %d errors</info>', $levelResult->getErrorCount()));
+            $this->symfonyStyle->writeln(sprintf(' * <info>Found %d errors</info>', $levelResult->getErrorCount()));
             $this->symfonyStyle->newLine();
         }
 
