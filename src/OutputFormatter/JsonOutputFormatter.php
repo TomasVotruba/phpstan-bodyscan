@@ -43,6 +43,7 @@ final readonly class JsonOutputFormatter implements OutputFormatterInterface
             $rawData[] = [
                 'level' => $levelResult->getLevel(),
                 'error_count' => $levelResult->getErrorCount(),
+                'increment_count' => $levelResult->getChangeToPreviousLevel(),
             ];
         }
 
