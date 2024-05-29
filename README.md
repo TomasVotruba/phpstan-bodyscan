@@ -36,19 +36,19 @@ vendor/bin/phpstan-bodyscan
 To get errors count per level:
 
 ```bash
-+-------+-------------+
-| Level | Error count |
-+-------+-------------+
-|     0 |           0 |
-|     1 |          35 |
-|     2 |          59 |
-|     3 |          93 |
-|     4 |         120 |
-|     5 |         125 |
-|     6 |         253 |
-|     7 |         350 |
-|     8 |         359 |
-+-------+-------------+
++-------+-------------+-----------+
+| Level | Error count | Increment |
++-------+-------------+-----------+
+|     0 |           0 |         - |
+|     1 |          35 |      + 35 |
+|     2 |          59 |      + 24 |
+|     3 |          59 |         - |
+|     4 |         120 |      + 61 |
+|     5 |         120 |         - |
+|     6 |         253 |     + 133 |
+|     7 |         350 |      + 97 |
+|     8 |         359 |       + 9 |
++-------+-------------+-----------;
 ```
 
 <br>
@@ -67,15 +67,18 @@ vendor/bin/phpstan-bodyscan --json
 [
     {
         "level": 0,
-        "error_count": 0
+        "error_count": 0,
+        "increment_count": 0
     },
     {
         "level": 1,
-        "error_count": 5
+        "error_count": 5,
+        "increment_count": 5
     },
     {
         "level": 2,
-        "error_count": 25
+        "error_count": 25,
+        "increment_count": 20
     }
 ]
 ```
