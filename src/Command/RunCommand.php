@@ -93,12 +93,14 @@ final class RunCommand extends Command
 
         // 2. measure phpstan levels
         for ($phpStanLevel = $minPhpStanLevel; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
-            $this->symfonyStyle->section(sprintf('Running PHPStan level %d', $phpStanLevel));
+            $this->symfonyStyle->section(sprintf('Running PHPStan level %d %s', $phpStanLevel, $withExtensions ?
+                'with extensions' : 'without extensions'));
 
             $levelResult = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables);
             $levelResults[] = $levelResult;
 
-            $this->symfonyStyle->success(sprintf('Found %d errors', $levelResult->getErrorCount()));
+            $this->symfonyStyle->writeln(sprintf('<info>Found %d errors</info>', $levelResult->getErrorCount()));
+            $this->symfonyStyle->newLine();
         }
 
         if ($withExtensions === false) {
