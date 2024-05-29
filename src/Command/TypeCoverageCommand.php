@@ -78,7 +78,6 @@ final class TypeCoverageCommand extends Command
         $this->dependencyInstaller->ensureTypeCoverageIsInstalled($projectDirectory);
 
         // @todo the extension config should be loaded with phpstan extension installed,
-        // @todo resolve manually here if missing
         $phpstanConfiguration = $this->phpStanConfigFactory->create($projectDirectory, [
             'parameters' => [
                 'type_coverage' => [

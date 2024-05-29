@@ -18,6 +18,7 @@ use TomasVotruba\PHPStanBodyscan\Process\PHPStanResultResolver;
 use TomasVotruba\PHPStanBodyscan\Utils\FileLoader;
 use TomasVotruba\PHPStanBodyscan\ValueObject\BodyscanResult;
 use TomasVotruba\PHPStanBodyscan\ValueObject\LevelResult;
+use Webmozart\Assert\Assert;
 
 final class RunCommand extends Command
 {
@@ -43,8 +44,13 @@ final class RunCommand extends Command
 
         $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
         $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
+
+        $this->addOption('with-extensions', null, InputOption::VALUE_NONE, 'Enable PHPStan extensions (removed by default)');
     }
 
+    /**
+     * @return Command::*
+     */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var string $projectDirectory */
@@ -52,6 +58,8 @@ final class RunCommand extends Command
 
         $minPhpStanLevel = (int) $input->getOption('min-level');
         $maxPhpStanLevel = (int) $input->getOption('max-level');
+        Assert::lessThanEq($minPhpStanLevel, $maxPhpStanLevel);
+
         $isJson = (bool) $input->getOption('json');
 
         // silence output till the end to avoid invalid json format
