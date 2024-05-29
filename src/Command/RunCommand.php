@@ -45,7 +45,12 @@ final class RunCommand extends Command
         $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
         $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
 
-        $this->addOption('with-extensions', null, InputOption::VALUE_NONE, 'Enable PHPStan extensions (removed by default)');
+        $this->addOption(
+            'with-extensions',
+            null,
+            InputOption::VALUE_NONE,
+            'Enable PHPStan extensions (removed by default)'
+        );
     }
 
     /**
