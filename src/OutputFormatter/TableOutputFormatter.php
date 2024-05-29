@@ -28,7 +28,7 @@ final readonly class TableOutputFormatter implements OutputFormatterInterface
         $this->symfonyStyle->newLine(2);
 
         $this->symfonyStyle->createTable()
-            ->setHeaders(['Level', 'Error count'])
+            ->setHeaders(['Level', 'Error count', 'Increment'])
             ->setRows($tableRows)
             // align right
             ->setStyle($tableStyle)
@@ -58,7 +58,9 @@ final readonly class TableOutputFormatter implements OutputFormatterInterface
     {
         $tableRows = [];
         foreach ($bodyscanResult->getLevelResults() as $levelResult) {
-            $tableRows[] = [$levelResult->getLevel(), $levelResult->getErrorCount()];
+            $increase = $levelResult->getChangeToPreviousLevel() ? '+ ' . $levelResult->getChangeToPreviousLevel() : '-';
+
+            $tableRows[] = [$levelResult->getLevel(), $levelResult->getErrorCount(), $increase];
         }
 
         return $tableRows;

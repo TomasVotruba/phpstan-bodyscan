@@ -87,7 +87,8 @@ final class RunCommand extends Command
             // temporarily disable project PHPStan extensions
             $phpstanExtensionFile = $projectDirectory . '/vendor/phpstan/extension-installer/src/GeneratedConfig.php';
             if (file_exists($phpstanExtensionFile)) {
-                $this->symfonyStyle->note('Disabling PHPStan extensions...');
+                $this->symfonyStyle->writeln('Disabling PHPStan extensions...');
+                $this->symfonyStyle->newLine();
                 rename($phpstanExtensionFile, $phpstanExtensionFile . '.bak');
             }
         }
@@ -105,8 +106,7 @@ final class RunCommand extends Command
         }
 
         if ($withExtensions === false) {
-            $this->symfonyStyle->newLine();
-            $this->symfonyStyle->note('Restoring PHPStan extensions...');
+            $this->symfonyStyle->writeln('Restoring PHPStan extensions...');
             $this->symfonyStyle->newLine();
 
             // restore PHPStan extension file
