@@ -23,6 +23,11 @@ final class PHPStanConfigFactory
     {
         $projectPHPStanFile = $projectDirectory . '/phpstan.neon';
 
+        if (! file_exists($projectPHPStanFile)) {
+            // add fallback to dist file
+            $projectPHPStanFile = $projectDirectory . '/phpstan.neon.dist';
+        }
+
         $phpstanConfiguration = $this->resolvePHPStanConfiguration($projectPHPStanFile, $projectDirectory);
         $phpstanConfiguration = array_merge_recursive($phpstanConfiguration, $extraConfiguration);
 
