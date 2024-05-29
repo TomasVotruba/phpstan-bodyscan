@@ -65,6 +65,8 @@ final class RunCommand extends Command
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         Assert::lessThanEq($minPhpStanLevel, $maxPhpStanLevel);
 
+        $withExtensions = (bool) $input->getOption('with-extensions');
+
         $isJson = (bool) $input->getOption('json');
 
         // silence output till the end to avoid invalid json format
@@ -81,6 +83,14 @@ final class RunCommand extends Command
 
         $levelResults = [];
 
+        if ($withExtensions === false) {
+            // temporarily disable project PHPStan extensions
+            $phpstanExtensionFile = $projectDirectory . '/vendor/phpstan/extension-installer/src/GeneratedConfig.php';
+            if (file_exists($phpstanExtensionFile)) {
+                rename($phpstanExtensionFile, $phpstanExtensionFile . '.bak');
+            }
+        }
+
         // 2. measure phpstan levels
         for ($phpStanLevel = $minPhpStanLevel; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
             $this->symfonyStyle->section(sprintf('Running PHPStan level %d', $phpStanLevel));
@@ -89,6 +99,12 @@ final class RunCommand extends Command
             $levelResults[] = $levelResult;
 
             $this->symfonyStyle->success(sprintf('Found %d errors', $levelResult->getErrorCount()));
+        }
+
+        if ($withExtensions === false) {
+            // restore PHPStan extension file
+            $phpstanExtensionFile = $projectDirectory . '/vendor/phpstan/extension-installer/src/GeneratedConfig.php';
+            rename($phpstanExtensionFile . '.bak', $phpstanExtensionFile);
         }
 
         $bodyscanResult = new BodyscanResult($levelResults);
