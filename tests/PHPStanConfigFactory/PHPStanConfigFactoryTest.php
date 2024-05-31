@@ -21,9 +21,8 @@ final class PHPStanConfigFactoryTest extends TestCase
     #[DataProvider('provideData')]
     public function test(string $projectDirectory, string $expectedPHPStanConfigFile): void
     {
-        $phpstanNeon = $this->phpStanConfigFactory->create($projectDirectory);
-
-        $this->assertStringEqualsFile($expectedPHPStanConfigFile, $phpstanNeon->getFileContents());
+        $phpStanConfig = $this->phpStanConfigFactory->create($projectDirectory);
+        $this->assertStringEqualsFile($expectedPHPStanConfigFile, $phpStanConfig->getFileContents());
     }
 
     public static function provideData(): Iterator

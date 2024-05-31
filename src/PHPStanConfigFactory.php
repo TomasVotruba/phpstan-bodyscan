@@ -20,7 +20,7 @@ final class PHPStanConfigFactory
     /**
      * @var string[]
      */
-    private const PHPSTAN_FILE_NAMES = ['phpstan.neon', 'phpstan.neon.dist', 'phpstan.php', 'phpstan.php.dist'];
+    private const PHPSTAN_FILE_NAMES = ['phpstan.neon', 'phpstan.neon.dist'];
 
     /**
      * @param array<string, mixed[]> $extraConfiguration
@@ -28,7 +28,7 @@ final class PHPStanConfigFactory
     public function create(string $projectDirectory, array $extraConfiguration = [], bool $bare = false): PHPStanConfig
     {
         $existingPHPStanFile = null;
-        $phpstanFileName = null;
+
         foreach (self::PHPSTAN_FILE_NAMES as $phpstanFileName) {
             if (file_exists($projectDirectory . '/' . $phpstanFileName)) {
                 $existingPHPStanFile = $projectDirectory . '/' . $phpstanFileName;
@@ -39,20 +39,26 @@ final class PHPStanConfigFactory
         // no config found? we have to create it
         if ($existingPHPStanFile === null) {
             $phpstanConfiguration = $this->createBasicPHPStanConfiguration($projectDirectory);
-            $phpstanNeon = $this->dumpToNeon($phpstanConfiguration);
-            return new PHPStanConfig($phpstanNeon, null);
+            $phpStanNeonContents = $this->dumpNeonToString($phpstanConfiguration);
+            return new PHPStanConfig($phpStanNeonContents);
         }
 
         // keep original setup
         if ($bare === false) {
-            return new PHPStanConfig(file_get_contents($existingPHPStanFile), $phpstanFileName);
+            $phpStanNeonContents = $this->loadFileAndMergeParameters($existingPHPStanFile, [
+                'parameters' => [
+                    // disable ignored error reporting, to make no fatal errors
+                    'reportUnmatchedIgnoredErrors' => false,
+                ],
+            ]);
+            return new PHPStanConfig($phpStanNeonContents);
         }
 
         $phpstanConfiguration = $this->createBarePHPStanConfiguration($existingPHPStanFile);
         $phpstanConfiguration = array_merge_recursive($phpstanConfiguration, $extraConfiguration);
 
-        $phpstanNeon = $this->dumpToNeon($phpstanConfiguration);
-        return new PHPStanConfig($phpstanNeon, $phpstanFileName);
+        $phpstanNeon = $this->dumpNeonToString($phpstanConfiguration);
+        return new PHPStanConfig($phpstanNeon);
     }
 
     /**
@@ -93,7 +99,21 @@ final class PHPStanConfigFactory
         ];
     }
 
-    private function dumpToNeon(array $phpstanConfiguration): string
+    /**
+     * @param array<string, mixed> $extraContents
+     */
+    private function loadFileAndMergeParameters(string $existingPHPStanFile, array $extraContents): string
+    {
+        $neon = Neon::decodeFile($existingPHPStanFile);
+        $neon = array_merge_recursive($neon, $extraContents);
+
+        return $this->dumpNeonToString($neon);
+    }
+
+    /**
+     * @param array<string, mixed> $phpstanConfiguration
+     */
+    private function dumpNeonToString(array $phpstanConfiguration): string
     {
         $encodedNeon = Neon::encode($phpstanConfiguration, true, '    ');
         return trim($encodedNeon) . PHP_EOL;
