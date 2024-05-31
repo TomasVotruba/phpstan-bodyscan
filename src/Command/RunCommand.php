@@ -46,10 +46,10 @@ final class RunCommand extends Command
         $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
 
         $this->addOption(
-            'with-extensions',
+            'bare',
             null,
             InputOption::VALUE_NONE,
-            'Enable PHPStan extensions (removed by default)'
+            'Without any extensions, without ignores, without baselines, just pure PHPStan'
         );
     }
 
@@ -65,8 +65,7 @@ final class RunCommand extends Command
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         Assert::lessThanEq($minPhpStanLevel, $maxPhpStanLevel);
 
-        $withExtensions = (bool) $input->getOption('with-extensions');
-
+        $isBare = (bool) $input->getOption('bare');
         $isJson = (bool) $input->getOption('json');
 
         // silence output till the end to avoid invalid json format
@@ -78,12 +77,12 @@ final class RunCommand extends Command
 
         // 1. prepare empty phpstan config
         // no baselines, ignores etc. etc :)
-        $phpstanConfiguration = $this->phpStanConfigFactory->create($projectDirectory);
+        $phpstanConfiguration = $this->phpStanConfigFactory->create($projectDirectory, $isBare);
         file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpstanConfiguration);
 
         $levelResults = [];
 
-        if ($withExtensions === false) {
+        if ($isBare) {
             // temporarily disable project PHPStan extensions
             $phpstanExtensionFile = $projectDirectory . '/vendor/phpstan/extension-installer/src/GeneratedConfig.php';
             if (file_exists($phpstanExtensionFile)) {
