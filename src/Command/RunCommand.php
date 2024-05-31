@@ -7,6 +7,7 @@ namespace TomasVotruba\PHPStanBodyscan\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TomasVotruba\PHPStanBodyscan\Logger;
@@ -22,6 +23,11 @@ use Webmozart\Assert\Assert;
 
 final class RunCommand extends Command
 {
+    /**
+     * @var array<int, string>
+     */
+    private const DOT_STATES = ['   ', '.  ', '.. ', '...', '....', '.....'];
+
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
         private readonly AnalyseProcessFactory $analyseProcessFactory,
@@ -46,14 +52,17 @@ final class RunCommand extends Command
         $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
 
         $this->addOption(
-            'with-extensions',
+            'bare',
             null,
             InputOption::VALUE_NONE,
-            'Enable PHPStan extensions (removed by default)'
+            'Without any extensions, without ignores, without baselines, just pure PHPStan'
         );
+
+        // @todo nobaseline - without ignores and baseline files
     }
 
     /**
+     * @param ConsoleOutput $output
      * @return Command::*
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -65,8 +74,7 @@ final class RunCommand extends Command
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         Assert::lessThanEq($minPhpStanLevel, $maxPhpStanLevel);
 
-        $withExtensions = (bool) $input->getOption('with-extensions');
-
+        $isBare = (bool) $input->getOption('bare');
         $isJson = (bool) $input->getOption('json');
 
         // silence output till the end to avoid invalid json format
@@ -78,12 +86,12 @@ final class RunCommand extends Command
 
         // 1. prepare empty phpstan config
         // no baselines, ignores etc. etc :)
-        $phpstanConfiguration = $this->phpStanConfigFactory->create($projectDirectory);
-        file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpstanConfiguration);
+        $phpstanConfig = $this->phpStanConfigFactory->create($projectDirectory, [], $isBare);
+        file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpstanConfig->getFileContents());
 
         $levelResults = [];
 
-        if ($withExtensions === false) {
+        if ($isBare) {
             // temporarily disable project PHPStan extensions
             $phpstanExtensionFile = $projectDirectory . '/vendor/phpstan/extension-installer/src/GeneratedConfig.php';
             if (file_exists($phpstanExtensionFile)) {
@@ -95,21 +103,28 @@ final class RunCommand extends Command
 
         // 2. measure phpstan levels
         for ($phpStanLevel = $minPhpStanLevel; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
-            $this->symfonyStyle->section(sprintf('Running PHPStan level %d %s', $phpStanLevel, $withExtensions ?
-                'with extensions' : 'without extensions'));
+            $infoMessage = '<info>' . sprintf('Running PHPStan level %d%s', $phpStanLevel, $isBare ?
+                    ' without extensions' : '') . '</info>';
+
+            $section = $output->section();
+
+            for ($i = 0; $i < 20; ++$i) {
+                $stateIndex = $i % count(self::DOT_STATES);
+                $section->overwrite($infoMessage . ': ' . self::DOT_STATES[$stateIndex]);
+                usleep(700_000);
+            }
 
             $levelResult = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables);
             $levelResults[] = $levelResult;
 
-            $this->symfonyStyle->writeln(sprintf(' * <info>Found %d errors</info>', $levelResult->getErrorCount()));
-            $this->symfonyStyle->newLine();
+            $section->overwrite(sprintf($infoMessage . ': found %d errors', $levelResult->getErrorCount()));
         }
 
-        if ($withExtensions === false) {
+        if ($isBare) {
+            // restore PHPStan extension file
             $this->symfonyStyle->writeln('Restoring PHPStan extensions...');
             $this->symfonyStyle->newLine();
 
-            // restore PHPStan extension file
             $phpstanExtensionFile = $projectDirectory . '/vendor/phpstan/extension-installer/src/GeneratedConfig.php';
             rename($phpstanExtensionFile . '.bak', $phpstanExtensionFile);
         }

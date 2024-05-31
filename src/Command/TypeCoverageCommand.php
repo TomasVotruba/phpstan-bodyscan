@@ -85,7 +85,7 @@ final class TypeCoverageCommand extends Command
                 ],
                 'customRulesetUsed' => true,
             ],
-        ]);
+        ], true);
         file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpstanConfiguration);
 
         $process = $this->analyseProcessFactory->createTypeCoverageProcess($projectDirectory);
