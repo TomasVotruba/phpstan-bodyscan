@@ -58,7 +58,7 @@ final class RunCommand extends Command
             'Without any extensions, without ignores, without baselines, just pure PHPStan'
         );
 
-        // @todo nobaseline - without ignores and baseline files
+        $this->addOption('no-ignore', null, InputOption::VALUE_NONE, 'Run PHPStan without any ignores/baselines');
     }
 
     /**
@@ -76,6 +76,7 @@ final class RunCommand extends Command
 
         $isBare = (bool) $input->getOption('bare');
         $isJson = (bool) $input->getOption('json');
+        $isNoIgnore = (bool) $input->getOption('no-ignore');
 
         // silence output till the end to avoid invalid json format
         if ($isJson) {
@@ -86,7 +87,7 @@ final class RunCommand extends Command
 
         // 1. prepare empty phpstan config
         // no baselines, ignores etc. etc :)
-        $phpstanConfig = $this->phpStanConfigFactory->create($projectDirectory, [], $isBare);
+        $phpstanConfig = $this->phpStanConfigFactory->create($projectDirectory, [], $isBare, $isNoIgnore);
         file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpstanConfig->getFileContents());
 
         $levelResults = [];

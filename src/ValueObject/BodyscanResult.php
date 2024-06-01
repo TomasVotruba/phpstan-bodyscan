@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\ValueObject;
 
+use Webmozart\Assert\Assert;
+
 final readonly class BodyscanResult
 {
     /**
@@ -12,6 +14,8 @@ final readonly class BodyscanResult
     public function __construct(
         private array $levelResults
     ) {
+        Assert::allIsInstanceOf($levelResults, LevelResult::class);
+        Assert::notEmpty($levelResults);
     }
 
     /**
@@ -19,8 +23,15 @@ final readonly class BodyscanResult
      */
     public function getLevelResults(): array
     {
-        // add relative to previous level
+        $this->computeChangesToPreviousLevels();
+
+        return $this->levelResults;
+    }
+
+    private function computeChangesToPreviousLevels(): void
+    {
         $previousLevelResult = null;
+
         foreach ($this->levelResults as $levelResult) {
             if ($previousLevelResult instanceof LevelResult) {
                 $changeToPreviousLevel = $levelResult->getErrorCount() - $previousLevelResult->getErrorCount();
@@ -29,7 +40,5 @@ final readonly class BodyscanResult
 
             $previousLevelResult = $levelResult;
         }
-
-        return $this->levelResults;
     }
 }

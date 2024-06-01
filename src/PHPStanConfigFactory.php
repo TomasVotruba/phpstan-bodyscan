@@ -25,8 +25,12 @@ final class PHPStanConfigFactory
     /**
      * @param array<string, mixed[]> $extraConfiguration
      */
-    public function create(string $projectDirectory, array $extraConfiguration = [], bool $bare = false): PHPStanConfig
-    {
+    public function create(
+        string $projectDirectory,
+        array $extraConfiguration = [],
+        bool $bare = false,
+        bool $isNoIgnore = false
+    ): PHPStanConfig {
         $existingPHPStanFile = null;
 
         foreach (self::PHPSTAN_FILE_NAMES as $phpstanFileName) {
@@ -50,7 +54,8 @@ final class PHPStanConfigFactory
                     // disable ignored error reporting, to make no fatal errors
                     'reportUnmatchedIgnoredErrors' => false,
                 ],
-            ]);
+            ], $isNoIgnore);
+
             return new PHPStanConfig($phpStanNeonContents);
         }
 
@@ -102,10 +107,17 @@ final class PHPStanConfigFactory
     /**
      * @param array<string, mixed> $extraContents
      */
-    private function loadFileAndMergeParameters(string $existingPHPStanFile, array $extraContents): string
-    {
+    private function loadFileAndMergeParameters(
+        string $existingPHPStanFile,
+        array $extraContents,
+        bool $isNoIgnore
+    ): string {
         $neon = Neon::decodeFile($existingPHPStanFile);
         $neon = array_merge_recursive($neon, $extraContents);
+
+        if ($isNoIgnore) {
+            $neon = $this->removeIgnoredErrors($neon);
+        }
 
         return $this->dumpNeonToString($neon);
     }
@@ -117,5 +129,25 @@ final class PHPStanConfigFactory
     {
         $encodedNeon = Neon::encode($phpstanConfiguration, true, '    ');
         return trim($encodedNeon) . PHP_EOL;
+    }
+
+    /**
+     * @param array<string, mixed> $neon
+     * @return array<string, mixed>
+     */
+    private function removeIgnoredErrors(array $neon): array
+    {
+        // remove included baseline and other ignored errors
+        if (isset($neon['includes'])) {
+            foreach ($neon['includes'] as $key => $includedFile) {
+                if (str_contains((string) $includedFile, 'baseline')) {
+                    unset($neon['includes'][$key]);
+                }
+            }
+        }
+
+        unset($neon['parameters']['ignoreErrors']);
+
+        return $neon;
     }
 }
