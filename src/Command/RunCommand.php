@@ -47,7 +47,7 @@ final class RunCommand extends Command
 
         $this->addOption('min-level', null, InputOption::VALUE_REQUIRED, 'Min PHPStan level to run', 0);
         $this->addOption('max-level', null, InputOption::VALUE_REQUIRED, 'Max PHPStan level to run', 8);
-
+        $this->addOption('timeout', null, InputOption::VALUE_OPTIONAL, 'Set PHPStan process timeout in seconds');
         $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
         $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
 
@@ -73,7 +73,7 @@ final class RunCommand extends Command
         $minPhpStanLevel = (int) $input->getOption('min-level');
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         Assert::lessThanEq($minPhpStanLevel, $maxPhpStanLevel);
-
+        $phpStanTimeout = $input->getOption('timeout') ? (int) $input->getOption('timeout') : null;
         $isBare = (bool) $input->getOption('bare');
         $isJson = (bool) $input->getOption('json');
         $isNoIgnore = (bool) $input->getOption('no-ignore');
@@ -115,7 +115,7 @@ final class RunCommand extends Command
                 usleep(700_000);
             }
 
-            $levelResult = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables);
+            $levelResult = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables, $phpStanTimeout);
             $levelResults[] = $levelResult;
 
             $section->overwrite(sprintf($infoMessage . ': found %d errors', $levelResult->getErrorCount()));
@@ -150,9 +150,10 @@ final class RunCommand extends Command
     private function measureErrorCountInLevel(
         int $phpStanLevel,
         string $projectDirectory,
-        array $envVariables
+        array $envVariables,
+        ?int $phpStanTimeout
     ): LevelResult {
-        $process = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel, $envVariables);
+        $process = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel, $envVariables, $phpStanTimeout);
         $process->run();
 
         $result = $this->phpStanResultResolver->resolve($process);

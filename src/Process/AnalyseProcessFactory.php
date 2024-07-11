@@ -22,7 +22,7 @@ final class AnalyseProcessFactory
     /**
      * @param array<string, mixed> $envVariables
      */
-    public function create(string $projectDirectory, int $phpStanLevel, array $envVariables): Process
+    public function create(string $projectDirectory, int $phpStanLevel, array $envVariables, int $phpStanTimeout = self::TIMEOUT_IN_SECONDS): Process
     {
         $phpStanBinFilePath = ComposerLoader::getPHPStanBinFile($projectDirectory);
 
@@ -34,13 +34,15 @@ final class AnalyseProcessFactory
             // increase default memory limit to allow analyse huge projects
             '--memory-limit',
             self::MEMORY_LIMIT,
+            '--timeout',
+            $phpStanTimeout,
             '--level',
             $phpStanLevel,
             '--configuration',
             'phpstan-bodyscan.neon',
         ];
 
-        return new Process($command, $projectDirectory, $envVariables, null, self::TIMEOUT_IN_SECONDS);
+        return new Process($command, $projectDirectory, $envVariables, null, $phpStanTimeout);
     }
 
     public function createTypeCoverageProcess(string $projectDirectory): Process
