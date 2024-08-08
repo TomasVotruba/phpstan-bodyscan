@@ -173,6 +173,18 @@ vendor/bin/phpstan-bodyscan run --env-file some-parameters.env
 
 <br>
 
+### TYPO3 extension
+
+Inital phpstan.neon file.
+
+```neon
+parameters:
+    paths:
+        - Classes
+        - Configuration
+
+```
+
 ### Debugging
 
 Running PHPStan on a new project you don't know might crash. To save data from finished levels, we dump them to the `bodyscan-log.txt` file.
