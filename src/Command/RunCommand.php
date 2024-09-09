@@ -50,6 +50,7 @@ final class RunCommand extends Command
         $this->addOption('timeout', null, InputOption::VALUE_OPTIONAL, 'Set PHPStan process timeout in seconds');
         $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
         $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
+        $this->addOption('silent', null, InputOption::VALUE_NONE, 'Hide progress informations (eg: for CI usage)');
 
         $this->addOption(
             'bare',
@@ -77,6 +78,7 @@ final class RunCommand extends Command
         $isBare = (bool) $input->getOption('bare');
         $isJson = (bool) $input->getOption('json');
         $isNoIgnore = (bool) $input->getOption('no-ignore');
+        $isSilent = (bool) $input->getOption('silent');
 
         // silence output till the end to avoid invalid json format
         if ($isJson) {
@@ -107,18 +109,24 @@ final class RunCommand extends Command
             $infoMessage = '<info>' . sprintf('Running PHPStan level %d%s', $phpStanLevel, $isBare ?
                     ' without extensions' : '') . '</info>';
 
-            $section = $output->section();
+            if (!$isSilent) {
+              $section = $output->section();
+            }
 
-            for ($i = 0; $i < 20; ++$i) {
-                $stateIndex = $i % count(self::DOT_STATES);
-                $section->overwrite($infoMessage . ': ' . self::DOT_STATES[$stateIndex]);
-                usleep(700_000);
+            if (!$isSilent) {
+                for ($i = 0; $i < 20; ++$i) {
+                    $stateIndex = $i % count(self::DOT_STATES);
+                    $section->overwrite($infoMessage . ': ' . self::DOT_STATES[$stateIndex]);
+                    usleep(700_000);
+                }
             }
 
             $levelResult = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables, $phpStanTimeout);
             $levelResults[] = $levelResult;
 
-            $section->overwrite(sprintf($infoMessage . ': found %d errors', $levelResult->getErrorCount()));
+            if (!$isSilent) {
+                $section->overwrite(sprintf($infoMessage . ': found %d errors', $levelResult->getErrorCount()));
+            }
         }
 
         if ($isBare) {
