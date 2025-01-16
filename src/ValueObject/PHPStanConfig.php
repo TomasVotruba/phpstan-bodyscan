@@ -1,17 +1,20 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 namespace TomasVotruba\PHPStanBodyscan\ValueObject;
 
-final readonly class PHPStanConfig
+final class PHPStanConfig
 {
-    public function __construct(
-        private string $fileContents,
-    ) {
+    /**
+     * @readonly
+     * @var string
+     */
+    private $fileContents;
+    public function __construct(string $fileContents)
+    {
+        $this->fileContents = $fileContents;
     }
-
-    public function getFileContents(): string
+    public function getFileContents() : string
     {
         return $this->fileContents;
     }

@@ -7,48 +7,7 @@
         "bin/phpstan-bodyscan.php"
     ],
     "require": {
-        "php": ">=8.2",
-        "illuminate/container": "^11.38",
-        "nette/neon": "^3.4",
-        "symfony/console": "^6.4",
-        "symfony/process": "^7.2",
-        "webmozart/assert": "^1.11"
-    },
-    "require-dev": {
-        "phpstan/extension-installer": "^1.4",
-        "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^11.5",
-        "rector/rector": "^2.0",
-        "symplify/easy-coding-standard": "^12.5",
-        "symplify/phpstan-rules": "^14.2",
-        "tracy/tracy": "^2.10"
-    },
-    "autoload": {
-        "psr-4": {
-            "TomasVotruba\\PHPStanBodyscan\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "TomasVotruba\\PHPStanBodyscan\\Tests\\": "tests"
-        }
-    },
-    "config": {
-        "platform-check": false,
-        "sort-packages": true,
-        "allow-plugins": {
-            "phpstan/extension-installer": true
-        }
-    },
-    "replace": {
-        "symfony/polyfill-ctype": "*",
-        "symfony/polyfill-intl-grapheme": "*",
-        "symfony/polyfill-mbstring": "*"
-    },
-    "scripts": {
-        "check-cs": "vendor/bin/ecs check --ansi",
-        "fix-cs": "vendor/bin/ecs check --fix --ansi",
-        "phpstan": "vendor/bin/phpstan analyse --ansi",
-        "rector": "vendor/bin/rector process --dry-run --ansi"
+        "php": ">=7.2",
+        "phpstan/phpstan": "^1.11"
     }
 }

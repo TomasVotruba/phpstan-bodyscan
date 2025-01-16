@@ -1,35 +1,26 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 namespace TomasVotruba\PHPStanBodyscan\Process;
 
-use Symfony\Component\Process\Process;
+use PHPStanBodyscan202501\Symfony\Component\Process\Process;
 use TomasVotruba\PHPStanBodyscan\Utils\ComposerLoader;
-
 final class AnalyseProcessFactory
 {
     /**
      * @var int
      */
     private const TIMEOUT_IN_SECONDS = 400;
-
     /**
      * @var string
      */
     private const MEMORY_LIMIT = '16G';
-
     /**
      * @param array<string, mixed> $envVariables
      */
-    public function create(
-        string $projectDirectory,
-        int $phpStanLevel,
-        array $envVariables,
-        ?int $phpStanTimeout = self::TIMEOUT_IN_SECONDS
-    ): Process {
+    public function create(string $projectDirectory, int $phpStanLevel, array $envVariables, ?int $phpStanTimeout = self::TIMEOUT_IN_SECONDS) : Process
+    {
         $phpStanBinFilePath = ComposerLoader::getPHPStanBinFile($projectDirectory);
-
         $command = [
             $phpStanBinFilePath,
             'analyse',
@@ -45,14 +36,11 @@ final class AnalyseProcessFactory
             '--configuration',
             'phpstan-bodyscan.neon',
         ];
-
         return new Process($command, $projectDirectory, $envVariables, null, $phpStanTimeout);
     }
-
-    public function createTypeCoverageProcess(string $projectDirectory): Process
+    public function createTypeCoverageProcess(string $projectDirectory) : Process
     {
         $phpStanBinFilePath = ComposerLoader::getPHPStanBinFile($projectDirectory);
-
         $command = [
             $phpStanBinFilePath,
             'analyse',
@@ -64,7 +52,6 @@ final class AnalyseProcessFactory
             '--configuration',
             'phpstan-bodyscan.neon',
         ];
-
         return new Process($command, $projectDirectory, null, null, self::TIMEOUT_IN_SECONDS);
     }
 }
