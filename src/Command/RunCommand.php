@@ -115,7 +115,12 @@ final class RunCommand extends Command
                 usleep(700_000);
             }
 
-            $levelResult = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables, $phpStanTimeout);
+            $levelResult = $this->measureErrorCountInLevel(
+                $phpStanLevel,
+                $projectDirectory,
+                $envVariables,
+                $phpStanTimeout
+            );
             $levelResults[] = $levelResult;
 
             $section->overwrite(sprintf($infoMessage . ': found %d errors', $levelResult->getErrorCount()));
@@ -153,7 +158,12 @@ final class RunCommand extends Command
         array $envVariables,
         ?int $phpStanTimeout
     ): LevelResult {
-        $process = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel, $envVariables, $phpStanTimeout);
+        $process = $this->analyseProcessFactory->create(
+            $projectDirectory,
+            $phpStanLevel,
+            $envVariables,
+            $phpStanTimeout
+        );
         $process->run();
 
         $result = $this->phpStanResultResolver->resolve($process);

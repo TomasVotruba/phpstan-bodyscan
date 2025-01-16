@@ -18,6 +18,7 @@ use TomasVotruba\PHPStanBodyscan\Process\AnalyseProcessFactory;
 use TomasVotruba\PHPStanBodyscan\Process\PHPStanResultResolver;
 use TomasVotruba\PHPStanBodyscan\ValueObject\TypeCoverage;
 use TomasVotruba\PHPStanBodyscan\ValueObject\TypeCoverageResult;
+use Webmozart\Assert\Assert;
 
 final class TypeCoverageCommand extends Command
 {
@@ -50,8 +51,9 @@ final class TypeCoverageCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var string $projectDirectory */
         $projectDirectory = getcwd();
+        Assert::string($projectDirectory);
+
         $isJson = (bool) $input->getOption('json');
 
         // silence output till the end to avoid invalid json format
