@@ -49,12 +49,7 @@ final class PHPStanConfigFactory
 
         // keep original setup
         if ($bare === false) {
-            $phpStanNeonContents = $this->loadFileAndMergeParameters($existingPHPStanFile, [
-                'parameters' => [
-                    // disable ignored error reporting, to make no fatal errors
-                    'reportUnmatchedIgnoredErrors' => false,
-                ],
-            ], $isNoIgnore);
+            $phpStanNeonContents = $this->loadFileAndMergeParameters($existingPHPStanFile, $isNoIgnore);
 
             return new PHPStanConfig($phpStanNeonContents);
         }
@@ -104,16 +99,9 @@ final class PHPStanConfigFactory
         ];
     }
 
-    /**
-     * @param array<string, mixed> $extraContents
-     */
-    private function loadFileAndMergeParameters(
-        string $existingPHPStanFile,
-        array $extraContents,
-        bool $isNoIgnore
-    ): string {
+    private function loadFileAndMergeParameters(string $existingPHPStanFile, bool $isNoIgnore): string
+    {
         $neon = Neon::decodeFile($existingPHPStanFile);
-        $neon = array_merge_recursive($neon, $extraContents);
 
         if ($isNoIgnore) {
             $neon = $this->removeIgnoredErrors($neon);
