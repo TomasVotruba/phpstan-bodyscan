@@ -5,5 +5,3 @@ parameters:
 
     excludePaths:
         - src/SomeOther
-
-    reportUnmatchedIgnoredErrors: false
