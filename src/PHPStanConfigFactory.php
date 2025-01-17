@@ -28,8 +28,7 @@ final class PHPStanConfigFactory
     public function create(
         string $projectDirectory,
         array $extraConfiguration = [],
-        bool $bare = false,
-        bool $isNoIgnore = false
+        bool $bare = false
     ): PHPStanConfig {
         $existingPHPStanFile = null;
 
@@ -49,7 +48,7 @@ final class PHPStanConfigFactory
 
         // keep original setup
         if ($bare === false) {
-            $phpStanNeonContents = $this->loadFileAndMergeParameters($existingPHPStanFile, $isNoIgnore);
+            $phpStanNeonContents = $this->loadFileAndMergeParameters($existingPHPStanFile);
 
             return new PHPStanConfig($phpStanNeonContents);
         }
@@ -99,13 +98,10 @@ final class PHPStanConfigFactory
         ];
     }
 
-    private function loadFileAndMergeParameters(string $existingPHPStanFile, bool $isNoIgnore): string
+    private function loadFileAndMergeParameters(string $existingPHPStanFile): string
     {
         $neon = Neon::decodeFile($existingPHPStanFile);
-
-        if ($isNoIgnore) {
-            $neon = $this->removeIgnoredErrors($neon);
-        }
+        $neon = $this->removeIgnoredErrors($neon);
 
         return $this->dumpNeonToString($neon);
     }

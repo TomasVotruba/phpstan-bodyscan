@@ -38,8 +38,6 @@ final class AnalyseProcessFactory
             // increase default memory limit to allow analyse huge projects
             '--memory-limit',
             self::MEMORY_LIMIT,
-            '--timeout',
-            $phpStanTimeout,
             '--level',
             $phpStanLevel,
             '--configuration',

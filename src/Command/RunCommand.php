@@ -47,7 +47,6 @@ final class RunCommand extends Command
 
         $this->addOption('min-level', null, InputOption::VALUE_REQUIRED, 'Min PHPStan level to run', 0);
         $this->addOption('max-level', null, InputOption::VALUE_REQUIRED, 'Max PHPStan level to run', 8);
-        $this->addOption('timeout', null, InputOption::VALUE_OPTIONAL, 'Set PHPStan process timeout in seconds');
         $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
         $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
 
@@ -57,8 +56,6 @@ final class RunCommand extends Command
             InputOption::VALUE_NONE,
             'Without any extensions, without ignores, without baselines, just pure PHPStan'
         );
-
-        $this->addOption('no-ignore', null, InputOption::VALUE_NONE, 'Run PHPStan without any ignores/baselines');
     }
 
     /**
@@ -76,7 +73,6 @@ final class RunCommand extends Command
         $phpStanTimeout = $input->getOption('timeout') ? (int) $input->getOption('timeout') : null;
         $isBare = (bool) $input->getOption('bare');
         $isJson = (bool) $input->getOption('json');
-        $isNoIgnore = (bool) $input->getOption('no-ignore');
 
         // silence output till the end to avoid invalid json format
         if ($isJson) {
@@ -87,7 +83,7 @@ final class RunCommand extends Command
 
         // 1. prepare empty phpstan config
         // no baselines, ignores etc. etc :)
-        $phpstanConfig = $this->phpStanConfigFactory->create($projectDirectory, [], $isBare, $isNoIgnore);
+        $phpstanConfig = $this->phpStanConfigFactory->create($projectDirectory, [], $isBare);
         file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpstanConfig->getFileContents());
 
         $levelResults = [];
