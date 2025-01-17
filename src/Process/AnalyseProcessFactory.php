@@ -48,23 +48,4 @@ final class AnalyseProcessFactory
 
         return new Process($command, $projectDirectory, $envVariables, null, $phpStanTimeout);
     }
-
-    public function createTypeCoverageProcess(string $projectDirectory): Process
-    {
-        $phpStanBinFilePath = ComposerLoader::getPHPStanBinFile($projectDirectory);
-
-        $command = [
-            $phpStanBinFilePath,
-            'analyse',
-            '--error-format',
-            'json',
-            // increase default memory limit to allow analyse huge projects
-            '--memory-limit',
-            self::MEMORY_LIMIT,
-            '--configuration',
-            'phpstan-bodyscan.neon',
-        ];
-
-        return new Process($command, $projectDirectory, null, null, self::TIMEOUT_IN_SECONDS);
-    }
 }

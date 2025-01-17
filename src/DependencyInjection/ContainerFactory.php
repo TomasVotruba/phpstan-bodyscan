@@ -22,7 +22,7 @@ final class ContainerFactory
         $container->singleton(Application::class, function (Container $container): Application {
             $application = new Application('PHPStan Bodyscan');
 
-            $commands = [$container->make(RunCommand::class), $container->make(TypeCoverageCommand::class)];
+            $commands = [$container->make(RunCommand::class)];
 
             $application->addCommands($commands);
             $application->setDefaultCommand('run');

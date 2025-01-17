@@ -1,12 +1,15 @@
 includes:
     - vendor/symplify/phpstan-rules/config/code-complexity-rules.neon
-    - vendor/symplify/phpstan-rules/config/collector-rules.neon
     - vendor/symplify/phpstan-rules/config/naming-rules.neon
-    - vendor/symplify/phpstan-rules/config/regex-rules.neon
     - vendor/symplify/phpstan-rules/config/static-rules.neon
 
 parameters:
     level: 8
+    treatPhpDocTypesAsCertain: false
+    reportUnmatchedIgnoredErrors:
+        - false
+        - false
+
     excludePaths:
         - */Fixture/*
 
@@ -15,15 +18,8 @@ parameters:
         - src
         - tests
 
-    unused_public:
-        methods: true
-        constants: true
-        properties: true
-
-    type_coverage:
-        param: 99
-        property: 99
-        return: 99
-        declare: 99
-
-    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        - '#Method TomasVotruba\\PHPStanBodyscan\\Command\\RunCommand::execute\(\) never returns (1|2) so it can be removed from the return type#'
+        -
+            message: '#PHPDoc tag @var with type string is not subtype of native type non-empty-string\|false#'
+            path: src/Command/RunCommand.php

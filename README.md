@@ -118,50 +118,6 @@ vendor/bin/phpstan-bodyscan run --min-level 0 --max-level 3
 
 <br>
 
-
-### Measure type coverage
-
-*Experimental!*
-
-Are you interested in learning param, return and property type declaration coverage of the project?
-
-Run `type-coverage` command ↓
-
-```bash
-vendor/bin/phpstan-bodyscan type-coverage --json
-```
-
-↓
-
-```php
-[
-    {
-        "category": "param type",
-        "relative_covered": 100,
-        "total_count": 54
-    },
-    {
-        "category": "property type",
-        "relative_covered": 100,
-        "total_count": 1
-    },
-    {
-        "category": "return type",
-        "relative_covered": 100,
-        "total_count": 33
-    },
-    {
-        "category": "strict declares",
-        "relative_covered": 100,
-        "total_count": 18
-    }
-]
-```
-
-Based on [type-coverage package](https://github.com/TomasVotruba/type-coverage).
-
-<br>
-
 ### Load env file
 
 Some projects need to load `.env` file to run PHPStan. You can do it like this:
