@@ -25,8 +25,7 @@ final class AnalyseProcessFactory
     public function create(
         string $projectDirectory,
         int $phpStanLevel,
-        array $envVariables,
-        ?int $phpStanTimeout = self::TIMEOUT_IN_SECONDS
+        array $envVariables
     ): Process {
         $phpStanBinFilePath = ComposerLoader::getPHPStanBinFile($projectDirectory);
 
@@ -44,6 +43,6 @@ final class AnalyseProcessFactory
             'phpstan-bodyscan.neon',
         ];
 
-        return new Process($command, $projectDirectory, $envVariables, null, $phpStanTimeout);
+        return new Process($command, $projectDirectory, $envVariables, null, self::TIMEOUT_IN_SECONDS);
     }
 }

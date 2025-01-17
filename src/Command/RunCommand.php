@@ -70,13 +70,14 @@ final class RunCommand extends Command
         $minPhpStanLevel = (int) $input->getOption('min-level');
         $maxPhpStanLevel = (int) $input->getOption('max-level');
         Assert::lessThanEq($minPhpStanLevel, $maxPhpStanLevel);
-        $phpStanTimeout = $input->getOption('timeout') ? (int) $input->getOption('timeout') : null;
+
         $isBare = (bool) $input->getOption('bare');
         $isJson = (bool) $input->getOption('json');
 
         // silence output till the end to avoid invalid json format
         if ($isJson) {
             $this->symfonyStyle->setVerbosity(OutputInterface::VERBOSITY_QUIET);
+            $output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
         }
 
         $envVariables = $this->loadEnvVariables($input);
@@ -114,8 +115,7 @@ final class RunCommand extends Command
             $levelResult = $this->measureErrorCountInLevel(
                 $phpStanLevel,
                 $projectDirectory,
-                $envVariables,
-                $phpStanTimeout
+                $envVariables
             );
             $levelResults[] = $levelResult;
 
@@ -151,15 +151,14 @@ final class RunCommand extends Command
     private function measureErrorCountInLevel(
         int $phpStanLevel,
         string $projectDirectory,
-        array $envVariables,
-        ?int $phpStanTimeout
+        array $envVariables
     ): LevelResult {
         $process = $this->analyseProcessFactory->create(
             $projectDirectory,
             $phpStanLevel,
-            $envVariables,
-            $phpStanTimeout
+            $envVariables
         );
+
         $process->run();
 
         $result = $this->phpStanResultResolver->resolve($process);
