@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TomasVotruba\PHPStanBodyscan\Command\RunCommand;
-use TomasVotruba\PHPStanBodyscan\Command\TypeCoverageCommand;
 
 final class ContainerFactory
 {
