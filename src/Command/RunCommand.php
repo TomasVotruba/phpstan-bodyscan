@@ -112,11 +112,7 @@ final class RunCommand extends Command
                 usleep(700_000);
             }
 
-            $levelResult = $this->measureErrorCountInLevel(
-                $phpStanLevel,
-                $projectDirectory,
-                $envVariables
-            );
+            $levelResult = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables);
             $levelResults[] = $levelResult;
 
             $section->overwrite(sprintf($infoMessage . ': found %d errors', $levelResult->getErrorCount()));
@@ -153,11 +149,7 @@ final class RunCommand extends Command
         string $projectDirectory,
         array $envVariables
     ): LevelResult {
-        $process = $this->analyseProcessFactory->create(
-            $projectDirectory,
-            $phpStanLevel,
-            $envVariables
-        );
+        $process = $this->analyseProcessFactory->create($projectDirectory, $phpStanLevel, $envVariables);
 
         $process->run();
 

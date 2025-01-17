@@ -22,11 +22,8 @@ final class AnalyseProcessFactory
     /**
      * @param array<string, mixed> $envVariables
      */
-    public function create(
-        string $projectDirectory,
-        int $phpStanLevel,
-        array $envVariables
-    ): Process {
+    public function create(string $projectDirectory, int $phpStanLevel, array $envVariables): Process
+    {
         $phpStanBinFilePath = ComposerLoader::getPHPStanBinFile($projectDirectory);
 
         $command = [
