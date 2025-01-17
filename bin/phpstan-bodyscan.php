@@ -15,8 +15,8 @@ if (file_exists(__DIR__ . '/../vendor/scoper-autoload.php')) {
     require_once __DIR__ . '/../vendor/autoload.php';
 }
 
-$ontainerFactory = new ContainerFactory();
-$container = $ontainerFactory->create();
+$containerFactory = new ContainerFactory();
+$container = $containerFactory->create();
 
 /** @var Application $application */
 $application = $container->get(Application::class);
