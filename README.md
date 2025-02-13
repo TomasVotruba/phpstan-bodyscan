@@ -56,13 +56,6 @@ To get errors count per level:
 +-------+-------------+-----------;
 ```
 
-<br>
-
-## Do you want to run levels including all ignored messages?
-
-```bash
-vendor/bin/phpstan-bodyscan --no-ignore
-```
 
 <br>
 
