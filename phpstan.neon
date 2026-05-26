@@ -12,7 +12,6 @@ parameters:
         - tests
 
     ignoreErrors:
-        - '#Method TomasVotruba\\PHPStanBodyscan\\Command\\RunCommand::execute\(\) never returns (1|2) so it can be removed from the return type#'
         -
             message: '#PHPDoc tag @var with type string is not subtype of native type non-empty-string\|false#'
             path: src/Command/RunCommand.php
