@@ -9,15 +9,9 @@ use TomasVotruba\PHPStanBodyscan\Utils\ComposerLoader;
 
 final class AnalyseProcessFactory
 {
-    /**
-     * @var int
-     */
-    private const TIMEOUT_IN_SECONDS = 400;
+    private const int TIMEOUT_IN_SECONDS = 400;
 
-    /**
-     * @var string
-     */
-    private const MEMORY_LIMIT = '16G';
+    private const string MEMORY_LIMIT = '16G';
 
     /**
      * @param array<string, mixed> $envVariables

@@ -26,7 +26,7 @@ final class RunCommand extends Command
     /**
      * @var array<int, string>
      */
-    private const DOT_STATES = ['   ', '.  ', '.. ', '...', '....', '.....'];
+    private const array DOT_STATES = ['   ', '.  ', '.. ', '...', '....', '.....'];
 
     public function __construct(
         private readonly SymfonyStyle $symfonyStyle,
