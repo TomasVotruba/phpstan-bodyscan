@@ -15,12 +15,12 @@ final class PHPStanConfigFactory
     /**
      * @var string[]
      */
-    private const POSSIBLE_SOURCE_PATHS = ['app', 'config', 'lib', 'src', 'tests'];
+    private const array POSSIBLE_SOURCE_PATHS = ['app', 'config', 'lib', 'src', 'tests'];
 
     /**
      * @var string[]
      */
-    private const PHPSTAN_FILE_NAMES = ['phpstan.neon', 'phpstan.neon.dist'];
+    private const array PHPSTAN_FILE_NAMES = ['phpstan.neon', 'phpstan.neon.dist'];
 
     /**
      * @param array<string, mixed[]> $extraConfiguration

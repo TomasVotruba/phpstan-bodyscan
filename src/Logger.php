@@ -6,10 +6,7 @@ namespace TomasVotruba\PHPStanBodyscan;
 
 final class Logger
 {
-    /**
-     * @var string
-     */
-    public const LOG_FILE_PATH = 'bodyscan-log.txt';
+    public const string LOG_FILE_PATH = 'bodyscan-log.txt';
 
     public static function log(string $message): void
     {

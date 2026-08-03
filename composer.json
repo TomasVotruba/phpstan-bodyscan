@@ -7,20 +7,20 @@
         "bin/phpstan-bodyscan.php"
     ],
     "require": {
-        "php": ">=8.2",
-        "illuminate/container": "^11.51",
+        "php": ">=8.3",
+        "illuminate/container": "^13.23",
         "nette/neon": "^3.4",
-        "symfony/console": "^6.4",
+        "symfony/console": "^7.4",
         "symfony/process": "^7.4",
-        "webmozart/assert": "^1.12"
+        "webmozart/assert": "^2.4"
     },
     "require-dev": {
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan": "^2.1",
-        "phpunit/phpunit": "^11.5",
+        "phpunit/phpunit": "^12.5",
         "rector/jack": "^1.0",
-        "rector/rector": "^2.4",
-        "symplify/easy-coding-standard": "^12.6",
+        "rector/rector": "^2.6",
+        "symplify/easy-coding-standard": "^13.2",
         "tracy/tracy": "^2.12"
     },
     "autoload": {

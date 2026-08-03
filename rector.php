@@ -8,12 +8,12 @@ return RectorConfig::configure()
     ->withPaths([__DIR__ . '/bin', __DIR__ . '/src', __DIR__ . '/tests'])
     ->withPreparedSets(
         deadCode: true,
-        naming: true,
-        privatization: true,
-        earlyReturn: true,
         codeQuality: true,
         codingStyle: true,
-        typeDeclarations: true
+        typeDeclarations: true,
+        privatization: true,
+        naming: true,
+        earlyReturn: true
     )
     ->withPhpSets()
     ->withRootFiles()

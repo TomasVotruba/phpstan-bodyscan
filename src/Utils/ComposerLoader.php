@@ -6,10 +6,7 @@ namespace TomasVotruba\PHPStanBodyscan\Utils;
 
 final class ComposerLoader
 {
-    /**
-     * @var string
-     */
-    private const DEFAULT_VENDOR_BIN = 'vendor/bin/';
+    private const string DEFAULT_VENDOR_BIN = 'vendor/bin/';
 
     public static function getPHPStanBinFile(string $projectDirectory): string
     {
