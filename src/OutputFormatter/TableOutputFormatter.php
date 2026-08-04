@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\OutputFormatter;
 
-use Symfony\Component\Console\Helper\TableStyle;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Entropy\Console\ConsoleTable\ConsoleTable;
+use Entropy\Console\Output\OutputPrinter;
 use TomasVotruba\PHPStanBodyscan\Contract\OutputFormatterInterface;
 use TomasVotruba\PHPStanBodyscan\ValueObject\BodyscanResult;
 use TomasVotruba\PHPStanBodyscan\ValueObject\TypeCoverageResult;
@@ -13,34 +13,26 @@ use TomasVotruba\PHPStanBodyscan\ValueObject\TypeCoverageResult;
 final readonly class TableOutputFormatter implements OutputFormatterInterface
 {
     public function __construct(
-        private SymfonyStyle $symfonyStyle,
+        private OutputPrinter $outputPrinter,
+        private ConsoleTable $consoleTable,
     ) {
     }
 
     public function outputResult(BodyscanResult $bodyscanResult): void
     {
-        // convert to symfony table data
         $tableRows = $this->createRawData($bodyscanResult);
 
-        $tableStyle = new TableStyle();
-        $tableStyle->setPadType(STR_PAD_LEFT);
+        $this->outputPrinter->newline(2);
 
-        $this->symfonyStyle->newLine(2);
-
-        $this->symfonyStyle->createTable()
-            ->setHeaders(['Level', 'Error count', 'Increment'])
-            ->setRows($tableRows)
-            // align right
-            ->setStyle($tableStyle)
-            ->render();
+        $this->consoleTable->render(['Level', 'Error count', 'Increment'], $tableRows);
     }
 
     public function outputTypeCoverageResult(TypeCoverageResult $typeCoverageResult): void
     {
-        $this->symfonyStyle->title('Type Coverage results');
+        $this->outputPrinter->title('Type Coverage results');
 
         foreach ($typeCoverageResult->getTypeCoverages() as $typeCoverage) {
-            $this->symfonyStyle->writeln(sprintf(
+            $this->outputPrinter->writeln(sprintf(
                 '%s coverage is %.1f %%, out of %d items total',
                 ucfirst($typeCoverage->getCategory()),
                 $typeCoverage->getRelative(),
@@ -48,11 +40,11 @@ final readonly class TableOutputFormatter implements OutputFormatterInterface
             ));
         }
 
-        $this->symfonyStyle->newLine();
+        $this->outputPrinter->newline();
     }
 
     /**
-     * @return mixed[]
+     * @return string[][]
      */
     private function createRawData(BodyscanResult $bodyscanResult): array
     {
@@ -60,7 +52,7 @@ final readonly class TableOutputFormatter implements OutputFormatterInterface
         foreach ($bodyscanResult->getLevelResults() as $levelResult) {
             $increase = $levelResult->getChangeToPreviousLevel() ? '+ ' . $levelResult->getChangeToPreviousLevel() : '-';
 
-            $tableRows[] = [$levelResult->getLevel(), $levelResult->getErrorCount(), $increase];
+            $tableRows[] = [(string) $levelResult->getLevel(), (string) $levelResult->getErrorCount(), $increase];
         }
 
         return $tableRows;

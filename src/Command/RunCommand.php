@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\Command;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Entropy\Console\Contract\DefaultCommandInterface;
+use Entropy\Console\Enum\ExitCode;
+use Entropy\Console\Output\OutputPrinter;
 use TomasVotruba\PHPStanBodyscan\Logger;
 use TomasVotruba\PHPStanBodyscan\OutputFormatter\JsonOutputFormatter;
 use TomasVotruba\PHPStanBodyscan\OutputFormatter\TableOutputFormatter;
@@ -21,109 +18,87 @@ use TomasVotruba\PHPStanBodyscan\ValueObject\BodyscanResult;
 use TomasVotruba\PHPStanBodyscan\ValueObject\LevelResult;
 use Webmozart\Assert\Assert;
 
-final class RunCommand extends Command
+final readonly class RunCommand implements DefaultCommandInterface
 {
-    /**
-     * @var array<int, string>
-     */
-    private const array DOT_STATES = ['   ', '.  ', '.. ', '...', '....', '.....'];
-
     public function __construct(
-        private readonly SymfonyStyle $symfonyStyle,
-        private readonly AnalyseProcessFactory $analyseProcessFactory,
-        private readonly PHPStanConfigFactory $phpStanConfigFactory,
-        private readonly JsonOutputFormatter $jsonOutputFormatter,
-        private readonly TableOutputFormatter $tableOutputFormatter,
-        private readonly PHPStanResultResolver $phpStanResultResolver
+        private OutputPrinter $outputPrinter,
+        private AnalyseProcessFactory $analyseProcessFactory,
+        private PHPStanConfigFactory $phpStanConfigFactory,
+        private JsonOutputFormatter $jsonOutputFormatter,
+        private TableOutputFormatter $tableOutputFormatter,
+        private PHPStanResultResolver $phpStanResultResolver
     ) {
-        parent::__construct();
     }
 
-    protected function configure(): void
+    public function getName(): string
     {
-        $this->setName('run');
-        $this->setAliases(['scan', 'analyse']);
-        $this->setDescription('Check classes that are not used in any config and in the code');
+        return 'run';
+    }
 
-        $this->addOption('min-level', null, InputOption::VALUE_REQUIRED, 'Min PHPStan level to run', 0);
-        $this->addOption('max-level', null, InputOption::VALUE_REQUIRED, 'Max PHPStan level to run', 8);
-        $this->addOption('env-file', null, InputOption::VALUE_REQUIRED, 'Path to project .env file');
-        $this->addOption('json', null, InputOption::VALUE_NONE, 'Show result in JSON');
-
-        $this->addOption(
-            'bare',
-            null,
-            InputOption::VALUE_NONE,
-            'Without any extensions, without ignores, without baselines, just pure PHPStan'
-        );
+    public function getDescription(): string
+    {
+        return 'Check classes that are not used in any config and in the code';
     }
 
     /**
-     * @param ConsoleOutput $output
-     * @return Command::*
+     * @option $minLevel
+     * @option $maxLevel
+     * @option $envFile
+     * @option $json
+     * @option $bare
+     *
+     * @param int $minLevel Min PHPStan level to run
+     * @param int $maxLevel Max PHPStan level to run
+     * @param string|null $envFile Path to project .env file
+     * @param bool $json Show result in JSON
+     * @param bool $bare Without any extensions, without ignores, without baselines, just pure PHPStan
+     * @return ExitCode::*
      */
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    public function run(
+        int $minLevel = 0,
+        int $maxLevel = 8,
+        ?string $envFile = null,
+        bool $json = false,
+        bool $bare = false
+    ): int {
         /** @var string $projectDirectory */
         $projectDirectory = getcwd();
 
-        $minPhpStanLevel = (int) $input->getOption('min-level');
-        $maxPhpStanLevel = (int) $input->getOption('max-level');
-        Assert::lessThanEq($minPhpStanLevel, $maxPhpStanLevel);
+        Assert::lessThanEq($minLevel, $maxLevel);
 
-        $isBare = (bool) $input->getOption('bare');
-        $isJson = (bool) $input->getOption('json');
-
-        // silence output till the end to avoid invalid json format
-        if ($isJson) {
-            $this->symfonyStyle->setVerbosity(OutputInterface::VERBOSITY_QUIET);
-            $output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
-        }
-
-        $envVariables = $this->loadEnvVariables($input);
+        $envVariables = $this->loadEnvVariables($envFile, $json);
 
         // 1. prepare empty phpstan config
         // no baselines, ignores etc. etc :)
-        $phpstanConfig = $this->phpStanConfigFactory->create($projectDirectory, [], $isBare);
+        $phpstanConfig = $this->phpStanConfigFactory->create($projectDirectory, [], $bare);
         file_put_contents($projectDirectory . '/phpstan-bodyscan.neon', $phpstanConfig->getFileContents());
 
         $levelResults = [];
 
-        if ($isBare) {
+        $phpstanExtensionFile = $projectDirectory . '/vendor/phpstan/extension-installer/src/GeneratedConfig.php';
+        $areExtensionsDisabled = false;
+
+        if ($bare && file_exists($phpstanExtensionFile)) {
             // temporarily disable project PHPStan extensions
-            $phpstanExtensionFile = $projectDirectory . '/vendor/phpstan/extension-installer/src/GeneratedConfig.php';
-            if (file_exists($phpstanExtensionFile)) {
-                $this->symfonyStyle->writeln('Disabling PHPStan extensions...');
-                $this->symfonyStyle->newLine();
-                rename($phpstanExtensionFile, $phpstanExtensionFile . '.bak');
-            }
+            $this->writeln('Disabling PHPStan extensions...', $json);
+            rename($phpstanExtensionFile, $phpstanExtensionFile . '.bak');
+            $areExtensionsDisabled = true;
         }
 
         // 2. measure phpstan levels
-        for ($phpStanLevel = $minPhpStanLevel; $phpStanLevel <= $maxPhpStanLevel; ++$phpStanLevel) {
-            $infoMessage = '<info>' . sprintf('Running PHPStan level %d%s', $phpStanLevel, $isBare ?
-                    ' without extensions' : '') . '</info>';
-
-            $section = $output->section();
-
-            for ($i = 0; $i < 20; ++$i) {
-                $stateIndex = $i % count(self::DOT_STATES);
-                $section->overwrite($infoMessage . ': ' . self::DOT_STATES[$stateIndex]);
-                usleep(700_000);
-            }
+        for ($phpStanLevel = $minLevel; $phpStanLevel <= $maxLevel; ++$phpStanLevel) {
+            $levelMessage = sprintf('Running PHPStan level %d%s', $phpStanLevel, $bare ? ' without extensions' : '');
+            $this->writeln($levelMessage . '...', $json);
 
             $levelResult = $this->measureErrorCountInLevel($phpStanLevel, $projectDirectory, $envVariables);
             $levelResults[] = $levelResult;
 
-            $section->overwrite(sprintf($infoMessage . ': found %d errors', $levelResult->getErrorCount()));
+            $this->writeln(sprintf($levelMessage . ': found %d errors', $levelResult->getErrorCount()), $json);
         }
 
-        if ($isBare) {
+        if ($areExtensionsDisabled) {
             // restore PHPStan extension file
-            $this->symfonyStyle->writeln('Restoring PHPStan extensions...');
-            $this->symfonyStyle->newLine();
-
-            $phpstanExtensionFile = $projectDirectory . '/vendor/phpstan/extension-installer/src/GeneratedConfig.php';
+            $this->writeln('Restoring PHPStan extensions...', $json);
             rename($phpstanExtensionFile . '.bak', $phpstanExtensionFile);
         }
 
@@ -132,13 +107,13 @@ final class RunCommand extends Command
         // 3. tidy up temporary config
         unlink($projectDirectory . '/phpstan-bodyscan.neon');
 
-        if ($isJson) {
+        if ($json) {
             $this->jsonOutputFormatter->outputResult($bodyscanResult);
         } else {
             $this->tableOutputFormatter->outputResult($bodyscanResult);
         }
 
-        return self::SUCCESS;
+        return ExitCode::SUCCESS;
     }
 
     /**
@@ -169,16 +144,26 @@ final class RunCommand extends Command
     /**
      * @return array<string, string>
      */
-    private function loadEnvVariables(InputInterface $input): array
+    private function loadEnvVariables(?string $envFile, bool $isJson): array
     {
-        $envFile = $input->getOption('env-file');
-        if (! is_string($envFile)) {
+        if ($envFile === null) {
             return [];
         }
 
-        $this->symfonyStyle->note(sprintf('Adding envs from "%s" file:', $envFile));
-        $this->symfonyStyle->newLine();
+        $this->writeln(sprintf('Adding envs from "%s" file:', $envFile), $isJson);
 
         return FileLoader::resolveEnvVariablesFromFile($envFile);
+    }
+
+    /**
+     * Progress output would break the JSON payload, so it is skipped in JSON mode.
+     */
+    private function writeln(string $message, bool $isJson): void
+    {
+        if ($isJson) {
+            return;
+        }
+
+        $this->outputPrinter->writeln($message);
     }
 }
