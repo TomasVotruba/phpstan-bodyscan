@@ -7,10 +7,9 @@
         "bin/phpstan-bodyscan.php"
     ],
     "require": {
-        "php": ">=8.3",
-        "illuminate/container": "^13.23",
+        "php": ">=8.4",
+        "entropy/entropy": "^0.4.6",
         "nette/neon": "^3.4",
-        "symfony/console": "^7.4",
         "symfony/process": "^7.4",
         "webmozart/assert": "^2.4"
     },

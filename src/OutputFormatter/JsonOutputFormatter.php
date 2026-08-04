@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace TomasVotruba\PHPStanBodyscan\OutputFormatter;
 
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Entropy\Console\Output\OutputPrinter;
 use TomasVotruba\PHPStanBodyscan\Contract\OutputFormatterInterface;
 use TomasVotruba\PHPStanBodyscan\ValueObject\BodyscanResult;
 use TomasVotruba\PHPStanBodyscan\ValueObject\TypeCoverageResult;
@@ -13,7 +12,7 @@ use TomasVotruba\PHPStanBodyscan\ValueObject\TypeCoverageResult;
 final readonly class JsonOutputFormatter implements OutputFormatterInterface
 {
     public function __construct(
-        private SymfonyStyle $symfonyStyle
+        private OutputPrinter $outputPrinter
     ) {
     }
 
@@ -34,9 +33,6 @@ final readonly class JsonOutputFormatter implements OutputFormatterInterface
 
     public function outputResult(BodyscanResult $bodyscanResult): void
     {
-        // restore verbosity
-        $this->symfonyStyle->setVerbosity(OutputInterface::VERBOSITY_NORMAL);
-
         $rawData = [];
 
         foreach ($bodyscanResult->getLevelResults() as $levelResult) {
@@ -57,8 +53,6 @@ final readonly class JsonOutputFormatter implements OutputFormatterInterface
     {
         $jsonOutput = json_encode($rawData, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
 
-        // restore verbosity
-        $this->symfonyStyle->setVerbosity(OutputInterface::VERBOSITY_NORMAL);
-        $this->symfonyStyle->writeln($jsonOutput);
+        $this->outputPrinter->writeln($jsonOutput);
     }
 }
