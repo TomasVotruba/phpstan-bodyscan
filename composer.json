@@ -2,6 +2,7 @@
     "name": "tomasvotruba/phpstan-bodyscan",
     "description": "Get error count for each PHPStan level",
     "license": "MIT",
+    "abandoned": true,
     "bin": [
         "bin/phpstan-bodyscan",
         "bin/phpstan-bodyscan.php"
