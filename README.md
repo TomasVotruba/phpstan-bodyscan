@@ -1,5 +1,8 @@
 # PHPStan Bodyscan
 
+> [!WARNING]
+> This package is deprecated and no longer maintained, as it's no longer relevant. The repository is archived.
+
 [![Downloads total](https://img.shields.io/packagist/dt/tomasvotruba/phpstan-bodyscan.svg?style=flat-square)](https://packagist.org/packages/tomasvotruba/phpstan-bodyscan/stats)
 
 * Do you want to get quick glimpse of new project code quality?
